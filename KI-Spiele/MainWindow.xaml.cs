@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KI_Spiele.Tic_tac_toe;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,8 @@ namespace KI_Spiele
         public MainWindow()
         {
             InitializeComponent();
+            GameState g = new GameState();
+
         }
     }
 }
