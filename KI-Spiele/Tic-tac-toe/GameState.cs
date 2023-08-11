@@ -9,7 +9,13 @@ namespace KI_Spiele.Tic_tac_toe
     class GameState : IGameState
     {
         #region --- Constructor ---
-        public GameState() 
+        /// <summary>
+        /// Instantiates the game board and its corresponding variables. Also can be used to control
+        /// which player makes the first move.
+        /// </summary>
+        /// <param name="startingPlayer"> Controls which player starts first. If not set
+        /// it's chosen randomly.</param>
+        public GameState(Player startingPlayer = Player.Undefined) 
         {
             GameBoard = new Player[][] 
             { 
@@ -19,11 +25,26 @@ namespace KI_Spiele.Tic_tac_toe
             };
             GameResult = GameResult.NotFinished;
             MoveNumber = 0;
+
+            NextPlayer = startingPlayer;
+            if (NextPlayer == Player.Undefined)
+            {
+                Random random = new Random();
+                NextPlayer = (Player)random.Next(0, 2);
+            }
         }
         #endregion
 
         #region --- Public Properties ---
+        // Reward for winning a game
+        public double Reward { get; set; }
+        // Penalty for losing a game
+        public double Penalty { get; set; }
         #endregion
+        /// <summary>
+        /// Iterates over the gameboard and returns the indices of all remaining
+        /// empty files.
+        /// </summary>
         public List<IAction> PossibleActions
         {
             get
@@ -47,6 +68,13 @@ namespace KI_Spiele.Tic_tac_toe
             } 
         }
 
+        /// <summary>
+        /// Executes action on the current game-state and updates the necessary member
+        /// variables.
+        /// </summary>
+        /// <param name="a">Action that is to be performed.</param>
+        /// <returns>A numerical reward determining how good the performed action was.</returns>
+        /// <exception cref="ArgumentException"></exception>
         public double ExecuteAction(IAction a)
         {
             Action action = (Action)a;
@@ -68,9 +96,29 @@ namespace KI_Spiele.Tic_tac_toe
 
             // Update the GameBoard to the current action.
             GameBoard[action.Move.Item1][action.Move.Item1] = action.Player;
+            // Update move number
             MoveNumber++;
+            // Update Current player
+            CurrentPlayer = NextPlayer;
+            NextPlayer = (Player)((1 + (byte)NextPlayer) % 2);
 
             GameResult = CheckForWinner();
+
+            double result = 0.0;
+
+            if (GameResult != GameResult.NotFinished && GameResult != GameResult.Draw)
+            {
+                if (GameResult == GameResult.PlayerZero && CurrentPlayer == Player.Zero)
+                {
+                    result = Reward;
+                }
+                else
+                {
+                    result = Penalty;
+                }
+            }
+
+            return result;
         }
 
         public GameResult GetGameState()
@@ -158,6 +206,9 @@ namespace KI_Spiele.Tic_tac_toe
         private Player[][] GameBoard;
         private byte MoveNumber;
         private GameResult GameResult;
+        // Player who made the last move
+        private Player CurrentPlayer;
+        private Player NextPlayer;
         #endregion
     }
 }

@@ -25,11 +25,6 @@ namespace KI_Spiele
         /// </summary>
         /// <param name="action"></param>
         void MakeMove(IAction action);
-
-        /// <summary>
-        /// Updates the current player index.
-        /// </summary>
-        void NextPlayer();
     }
 
     enum Player : byte

@@ -13,12 +13,6 @@ namespace KI_Spiele.Tic_tac_toe
         #endregion
 
         #region --- Public Properties ---
-        public byte CurrentPlayer { get; }
-        // Reward for winning a game
-        public double Reward { get; set; } 
-        // Penalty for losing a game
-        public double Penalty { get; set; }
-
         #endregion
 
         #region --- Public Member Functions ---
@@ -31,11 +25,6 @@ namespace KI_Spiele.Tic_tac_toe
         }
 
         public void MakeMove(IAction action)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void NextPlayer()
         {
             throw new NotImplementedException();
         }

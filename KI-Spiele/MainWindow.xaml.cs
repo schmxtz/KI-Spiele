@@ -23,8 +23,16 @@ namespace KI_Spiele
         public MainWindow()
         {
             InitializeComponent();
-            GameState g = new GameState();
+            // GameState g = new GameState();
+            Player t = Player.One;
+            t = (Player)((1 + (byte)t) % 2);
+            Console.WriteLine(t);
 
+            t = Player.Zero;
+            t = (Player)((1 + (byte)t) % 2);
+            Console.WriteLine(t);
+
+            Console.WriteLine(2 % 2);
         }
     }
 }
