@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace KI_Spiele
@@ -24,7 +25,25 @@ namespace KI_Spiele
         /// Makes a move with the given action.
         /// </summary>
         /// <param name="action"></param>
-        void MakeMove(IAction action);
+        double MakeMove(IAction action);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        List<IAction> GetMoves();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        BigInteger GetGameStateId();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        GameResult GetGameResult();
     }
 
     enum Player : byte

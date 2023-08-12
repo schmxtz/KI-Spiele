@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Action = KI_Spiele.Tic_tac_toe.Action;
 
 namespace KI_Spiele
 {
@@ -23,16 +25,21 @@ namespace KI_Spiele
         public MainWindow()
         {
             InitializeComponent();
-            // GameState g = new GameState();
-            Player t = Player.One;
-            t = (Player)((1 + (byte)t) % 2);
-            Console.WriteLine(t);
-
-            t = Player.Zero;
-            t = (Player)((1 + (byte)t) % 2);
-            Console.WriteLine(t);
-
-            Console.WriteLine(2 % 2);
+            IGame test = new Game();
+            Action action = new Action
+            {
+                Move = (1, 1)
+            };
+            test.MakeMove(action);
+            action.Move = (0,0);
+            test.MakeMove(action);
+            action.Move = (1,0);
+            test.MakeMove(action);
+            action.Move = (0, 2);
+            test.MakeMove(action);
+            action.Move = (1, 2);
+            test.MakeMove(action);
+            Console.WriteLine(test.GetGameStateId() + " " + test.GetGameResult());  
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Windows.Media.Animation;
 
@@ -11,6 +12,7 @@ namespace KI_Spiele
     /// </summary>
     interface IGameState
     {
+        BigInteger Id { get; }
         /// <summary>
         /// List of valid actions that can performed on the current game state.
         /// </summary>
@@ -32,5 +34,11 @@ namespace KI_Spiele
         /// Returns the corresponding enum value.
         /// </returns>
         GameResult GetGameState();
+
+        /// <summary>
+        /// Resets current game-state without creating a new object
+        /// </summary>
+        /// <param name="startingPlayer"></param>
+        void ResetBoard(Player startingPlayer);
     }
 }

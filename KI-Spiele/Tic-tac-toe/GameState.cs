@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,34 +14,56 @@ namespace KI_Spiele.Tic_tac_toe
         /// Instantiates the game board and its corresponding variables. Also can be used to control
         /// which player makes the first move.
         /// </summary>
-        /// <param name="startingPlayer"> Controls which player starts first. If not set
-        /// it's chosen randomly.</param>
-        public GameState(Player startingPlayer = Player.Undefined) 
+        /// <param name="startingPlayer"> Controls which player starts first. If set
+        /// to Undefined, it's chosen randomly.</param>
+        public GameState(Player startingPlayer) 
         {
-            GameBoard = new Player[][] 
-            { 
-                new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined },
-                new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined },
-                new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined },
-            };
-            GameResult = GameResult.NotFinished;
-            MoveNumber = 0;
-
-            NextPlayer = startingPlayer;
-            if (NextPlayer == Player.Undefined)
-            {
-                Random random = new Random();
-                NextPlayer = (Player)random.Next(0, 2);
-            }
+            ResetBoard(startingPlayer);
         }
         #endregion
 
         #region --- Public Properties ---
         // Reward for winning a game
-        public double Reward { get; set; }
+        public double Reward { get; set; } = 1.0;
         // Penalty for losing a game
-        public double Penalty { get; set; }
+        public double Penalty { get; set; } = -1.0;
+        IGame Game { get; set; }
         #endregion
+
+        #region --- Public Member Functions ---
+        #endregion
+
+        #region --- IGameState Interface Implementation ----
+        public BigInteger Id
+        {
+            get
+            {
+                BigInteger result = 1;
+                for (int i = 0; i < GameBoard.Length; i++)
+                {
+                    for (int j = 0; j < GameBoard.Length; j++)
+                    {
+                        switch (GameBoard[i][j])
+                        {
+                            case Player.Zero:
+                                result <<= 2;
+                                result += (byte)Player.Zero;
+                                break;
+                            case Player.One:
+                                result <<= 2;
+                                result += (byte)Player.One;
+                                break;
+                            case Player.Undefined:
+                                result <<= 2;
+                                result += (byte)Player.Undefined;
+                                break;
+                        }
+                    }
+                }
+                return result;
+            }
+        }
+
         /// <summary>
         /// Iterates over the gameboard and returns the indices of all remaining
         /// empty files.
@@ -58,7 +81,6 @@ namespace KI_Spiele.Tic_tac_toe
                         {
                             actions.Add(new Action() 
                             {
-                                Player = Player.Undefined,
                                 Move = (i, j)
                             });
                         }
@@ -69,11 +91,10 @@ namespace KI_Spiele.Tic_tac_toe
         }
 
         /// <summary>
-        /// Executes action on the current game-state and updates the necessary member
-        /// variables.
+        /// Implements <see cref="IGameState.ExecuteAction(IAction)"/>
         /// </summary>
-        /// <param name="a">Action that is to be performed.</param>
-        /// <returns>A numerical reward determining how good the performed action was.</returns>
+        /// <param name="a"></param>
+        /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         public double ExecuteAction(IAction a)
         {
@@ -95,7 +116,7 @@ namespace KI_Spiele.Tic_tac_toe
             }
 
             // Update the GameBoard to the current action.
-            GameBoard[action.Move.Item1][action.Move.Item1] = action.Player;
+            GameBoard[action.Move.Row][action.Move.Column] = NextPlayer;
             // Update move number
             MoveNumber++;
             // Update Current player
@@ -125,6 +146,26 @@ namespace KI_Spiele.Tic_tac_toe
         {
             return GameResult;
         }
+
+        public void ResetBoard(Player startingPlayer)
+        {
+            GameBoard = new Player[][]
+            {
+                new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined },
+                new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined },
+                new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined },
+            };
+            GameResult = GameResult.NotFinished;
+            MoveNumber = 0;
+
+            NextPlayer = startingPlayer;
+            if (NextPlayer == Player.Undefined)
+            {
+                Random random = new Random();
+                NextPlayer = (Player)random.Next(0, 2);
+            }
+        }
+        #endregion
 
         #region --- Private Helper Functions ---
         private GameResult CheckForWinner()
@@ -169,13 +210,12 @@ namespace KI_Spiele.Tic_tac_toe
             }
             return result;  
         }
-
         private GameResult CheckRow()
         {
             GameResult result = GameResult.NotFinished;
             for (byte i = 0; i < GameBoard.Length; i++)
             {
-                if (GameBoard[i][0] == GameBoard[i][1] && GameBoard[i][1] == GameBoard[i][2] && GameBoard[0][i] != Player.Undefined)
+                if (GameBoard[i][0] == GameBoard[i][1] && GameBoard[i][1] == GameBoard[i][2] && GameBoard[i][0] != Player.Undefined)
                 {
                     // Is castable since it can't be Player.Undefined and GameResult.PlayerZero/GameResult.PlayerOne have the same index as
                     // Player.Zero/Player.One
@@ -184,7 +224,6 @@ namespace KI_Spiele.Tic_tac_toe
             }
             return result;
         }
-
         private GameResult CheckDiagonal()
         {
             GameResult result = GameResult.NotFinished;
