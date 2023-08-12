@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
+using System.Windows.Controls;
 
 namespace KI_Spiele.Tic_tac_toe
 {
@@ -14,29 +10,32 @@ namespace KI_Spiele.Tic_tac_toe
         public Game(Player startingPlayer = Player.Undefined) 
         { 
             GameState = new GameState(startingPlayer);
+            GameGUI = new GameGUI();
             StartingPlayer = startingPlayer;
         }
         #endregion
 
         #region --- Public Properties ---
-        Player StartingPlayer { get; set; }
-        long PlayerZeroWins { get; set; } = 0;
-        long PlayerOneWins { get; set; } = 0;
-        long Draws { get; set; } = 0;
+        public Player StartingPlayer { get; set; }
+        public long PlayerZeroWins { get; set; } = 0;
+        public long PlayerOneWins { get; set; } = 0;
+        public long Draws { get; set; } = 0;
         #endregion
 
         #region --- Public Member Functions ---
         #endregion
 
         #region --- IGameState Interface Implementation ----
-        public void InitializeBoard()
+        public void InitializeBoard(MainWindow window)
         {
-            throw new NotImplementedException();
+            GameGUI.InitializeBoard(this, window);
         }
 
         public double MakeMove(IAction action)
         {
-            return GameState.ExecuteAction(action);
+            double result = GameState.ExecuteAction(action);
+            GameGUI.UpdateBoard(action); 
+            return result;
         }
 
         public void ResetGame()
@@ -57,6 +56,11 @@ namespace KI_Spiele.Tic_tac_toe
         public GameResult GetGameResult()
         {
             return GameState.GetGameState();
+        }
+
+        public Player GetNextPlayer()
+        {
+            return GameState.GetNextPlayer();
         }
         #endregion
 

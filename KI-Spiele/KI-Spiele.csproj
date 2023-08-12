@@ -56,6 +56,7 @@
     </ApplicationDefinition>
     <Compile Include="Tic-tac-toe\Action.cs" />
     <Compile Include="Tic-tac-toe\Game.cs" />
+    <Compile Include="Tic-tac-toe\GameGUI.cs" />
     <Compile Include="Tic-tac-toe\GameState.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -97,6 +98,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Tic-tac-toe\images\board.png" />
+    <Resource Include="Tic-tac-toe\images\circle.png" />
+    <Resource Include="Tic-tac-toe\images\cross.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

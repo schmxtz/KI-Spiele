@@ -5,8 +5,51 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KI_Spiele"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="KI-Spiele" Height="1024" Width="1280">
+
+    <Window.Resources>
+        <BitmapImage x:Key="TicBoard" UriSource="Tic-tac-toe/images/board.png"/>
+        <BitmapImage x:Key="TicPZero" UriSource="Tic-tac-toe/images/circle.png"/>
+        <BitmapImage x:Key="TicPOne" UriSource="Tic-tac-toe/images/cross.png"/>
+    </Window.Resources>
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StatusBar  Grid.Row="0" Height="34">
+            <TextBlock>Game</TextBlock>
+            <ComboBox x:Name="GameSelect" Width="100" SelectedIndex="0" Focusable="False">
+            </ComboBox>
+            <TextBlock>Mode</TextBlock>
+            <ComboBox x:Name="ModeSelect" Width="100" SelectedIndex="0" Focusable="False">
+            </ComboBox>
+            <TextBlock>Starting Player</TextBlock>
+            <ComboBox x:Name="StartingPlayer" Width="100" SelectedIndex="0" Focusable="False">
+            </ComboBox>
+        </StatusBar>
+        <StatusBar x:Name="StatusBarRewards" Grid.Row="1">
+            <TextBlock Margin="10,0,0,0" FontWeight="Bold">Reward Function:</TextBlock>
+            <TextBlock Margin="10,0,0,0">Reward win AI:</TextBlock>
+            <TextBox x:Name="Reward" Width="40">1.0</TextBox>
+            <TextBlock Margin="10,0,0,0">Penalty loss AI:</TextBlock>
+            <TextBox x:Name="Penalty" Width="40">-1.0</TextBox>
+            <TextBlock Margin="10,0,0,0">Reward win AI_2:</TextBlock>
+            <TextBox x:Name="Reward2" Width="40">1.0</TextBox>
+            <TextBlock Margin="10,0,0,0">Penalty loss AI_2:</TextBlock>
+            <TextBox x:Name="Penalty2" Width="40">-1.0</TextBox>
+            <TextBlock Margin="10,0,0,0" FontWeight="Bold">Game outcomes:</TextBlock>
+            <TextBlock Margin="10,0,0,0">Player Zero wins:</TextBlock>
+            <Label x:Name="PlayerZeroWins" Width="60">0</Label>
+            <TextBlock Margin="10,0,0,0">Player One wins:</TextBlock>
+            <Label x:Name="PlayerOneWins" Width="60">0</Label>
+            <TextBlock Margin="10,0,0,0">Draws:</TextBlock>
+            <Label x:Name="Draws" Width="60">0</Label>
+        </StatusBar>
+        <Grid Grid.Row="2" x:Name="GameGrid">
+            
+        </Grid>
     </Grid>
 </Window>

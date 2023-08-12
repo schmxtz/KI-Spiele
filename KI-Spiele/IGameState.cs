@@ -40,5 +40,11 @@ namespace KI_Spiele
         /// </summary>
         /// <param name="startingPlayer"></param>
         void ResetBoard(Player startingPlayer);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Player GetNextPlayer();
     }
 }

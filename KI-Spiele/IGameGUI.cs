@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
 
 namespace KI_Spiele
 {
@@ -13,12 +14,14 @@ namespace KI_Spiele
         /// <summary>
         /// Initializes the board GUI on a given panel.
         /// </summary>
-        void InitializeBoard();
+        void InitializeBoard(IGame game, MainWindow window);
 
         /// <summary>
         /// Updates the current board with its given action.
         /// </summary>
         /// <param name="action"></param>
         void UpdateBoard(IAction action);
+
+        void ResetBoard();
     }
 }

@@ -165,6 +165,15 @@ namespace KI_Spiele.Tic_tac_toe
                 NextPlayer = (Player)random.Next(0, 2);
             }
         }
+
+        /// <summary>
+        /// R
+        /// </summary>
+        /// <returns></returns>
+        public Player GetNextPlayer()
+        {
+            return NextPlayer;
+        }
         #endregion
 
         #region --- Private Helper Functions ---

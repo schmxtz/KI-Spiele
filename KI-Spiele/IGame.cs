@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace KI_Spiele
 {
@@ -11,10 +13,14 @@ namespace KI_Spiele
     /// </summary>
     interface IGame
     {
+        Player StartingPlayer { get; set; }
+        long PlayerZeroWins { get; set; }
+        long PlayerOneWins { get; set; }
+        long Draws { get; set; }
         /// <summary>
         /// Initializes the board and its necessary member variables.
         /// </summary>
-        void InitializeBoard();
+        void InitializeBoard(MainWindow window);
 
         /// <summary>
         /// Resets the game.
@@ -44,6 +50,12 @@ namespace KI_Spiele
         /// </summary>
         /// <returns></returns>
         GameResult GetGameResult();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Player GetNextPlayer();
     }
 
     enum Player : byte
