@@ -13,6 +13,7 @@ namespace KI_Spiele
     interface IGameState
     {
         BigInteger Id { get; }
+
         /// <summary>
         /// List of valid actions that can performed on the current game state.
         /// </summary>
@@ -25,7 +26,7 @@ namespace KI_Spiele
         /// <returns>
         /// Returns a numerical reward.
         /// </returns>
-        double ExecuteAction(IAction action);
+        GameResult ExecuteAction(IAction action);
 
         /// <summary>
         /// Returns the current state of the game (Finished, etc.).
@@ -46,5 +47,7 @@ namespace KI_Spiele
         /// </summary>
         /// <returns></returns>
         Player GetNextPlayer();
+
+        IAction GetAction(byte row, byte column);
     }
 }

@@ -10,5 +10,6 @@ namespace KI_Spiele
     /// </summary>
     interface IAction
     {
+        (byte Row, byte Column) Move { get; set; }
     }
 }

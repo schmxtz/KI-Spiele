@@ -54,6 +54,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AI\QLearning.cs" />
+    <Compile Include="AI\QTable.cs" />
+    <Compile Include="AI\Util.cs" />
     <Compile Include="Tic-tac-toe\Action.cs" />
     <Compile Include="Tic-tac-toe\Game.cs" />
     <Compile Include="Tic-tac-toe\GameGUI.cs" />
@@ -104,5 +107,6 @@
     <Resource Include="Tic-tac-toe\images\circle.png" />
     <Resource Include="Tic-tac-toe\images\cross.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

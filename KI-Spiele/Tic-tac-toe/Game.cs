@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using KI_Spiele.AI;
+using System.Collections.Generic;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace KI_Spiele.Tic_tac_toe
@@ -17,9 +19,8 @@ namespace KI_Spiele.Tic_tac_toe
 
         #region --- Public Properties ---
         public Player StartingPlayer { get; set; }
-        public long PlayerZeroWins { get; set; } = 0;
-        public long PlayerOneWins { get; set; } = 0;
-        public long Draws { get; set; } = 0;
+        public QLearning QLearningAIZero { get; set; }
+        public QLearning QLearningAIOne { get; set; }
         #endregion
 
         #region --- Public Member Functions ---
@@ -31,16 +32,26 @@ namespace KI_Spiele.Tic_tac_toe
             GameGUI.InitializeBoard(this, window);
         }
 
-        public double MakeMove(IAction action)
+        public GameResult MakeMove(IAction action, bool updateGUI = true)
         {
-            double result = GameState.ExecuteAction(action);
-            GameGUI.UpdateBoard(action); 
+            GameResult result = GameState.ExecuteAction(action);
+            if (updateGUI)
+            {
+                GameGUI.UpdateBoard(action);
+            }            
+
+            if (result != GameResult.NotFinished)
+            {
+                ResetGame();
+            }
+
             return result;
         }
 
         public void ResetGame()
         {
             GameState.ResetBoard(StartingPlayer);
+            GameGUI.ResetBoard();
         }
 
         public List<IAction> GetMoves()
@@ -62,8 +73,25 @@ namespace KI_Spiele.Tic_tac_toe
         {
             return GameState.GetNextPlayer();
         }
+
+        public void BindUICallback()
+        {
+            GameGUI.BindUICallback();
+        }
+
+        public void UnbindUICallback()
+        {
+            GameGUI.UnbindUICallback();
+        }
+
+        public IAction GetAction(byte row, byte column)
+        {
+            return GameState.GetAction(row, column);
+        }
         #endregion
 
+        #region --- Private Helper Functions ---
+        #endregion
 
         #region --- Private Members ---
         IGameState GameState;

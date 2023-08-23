@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KI_Spiele"
         mc:Ignorable="d"
-        Title="KI-Spiele" Height="1024" Width="1280">
+        Title="KI-Spiele" Height="1100" Width="1280">
 
     <Window.Resources>
         <BitmapImage x:Key="TicBoard" UriSource="Tic-tac-toe/images/board.png"/>
@@ -17,29 +17,50 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="34"/>
             <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StatusBar  Grid.Row="0" Height="34">
+        <StatusBar Grid.Row="0">
             <TextBlock>Game</TextBlock>
-            <ComboBox x:Name="GameSelect" Width="100" SelectedIndex="0" Focusable="False">
-            </ComboBox>
+            <ComboBox x:Name="GameSelect" Width="100" SelectedIndex="0" Focusable="False"></ComboBox>
             <TextBlock>Mode</TextBlock>
-            <ComboBox x:Name="ModeSelect" Width="100" SelectedIndex="0" Focusable="False">
-            </ComboBox>
+            <ComboBox x:Name="ModeSelect" Width="100" SelectedIndex="0" Focusable="False"></ComboBox>
             <TextBlock>Starting Player</TextBlock>
-            <ComboBox x:Name="StartingPlayer" Width="100" SelectedIndex="0" Focusable="False">
-            </ComboBox>
+            <ComboBox x:Name="StartingPlayer" Width="100" SelectedIndex="0" Focusable="False"></ComboBox>
+            <StatusBar x:Name="TrainGUI" Visibility="Hidden">
+                <TextBlock Margin="5,0,0,0" >Num Iterations:</TextBlock>
+                <TextBox x:Name="NumIterations" 
+                      Margin="0,0,5,0"  Width="80" TextAlignment="Right">100000</TextBox>
+                <Button x:Name="TrainButton" Margin="10,0,5,0" Width="70" Click="StartTraining">Train</Button>
+                <TextBlock   Margin="5,0,0,0">Progress:</TextBlock>
+                <ProgressBar x:Name="Progress" Margin="0,0,10,0" Height="10" Width="60" Value="0"/>
+            </StatusBar>
         </StatusBar>
-        <StatusBar x:Name="StatusBarRewards" Grid.Row="1">
+        <StatusBar Grid.Row="1">
             <TextBlock Margin="10,0,0,0" FontWeight="Bold">Reward Function:</TextBlock>
             <TextBlock Margin="10,0,0,0">Reward win AI:</TextBlock>
             <TextBox x:Name="Reward" Width="40">1.0</TextBox>
             <TextBlock Margin="10,0,0,0">Penalty loss AI:</TextBlock>
             <TextBox x:Name="Penalty" Width="40">-1.0</TextBox>
-            <TextBlock Margin="10,0,0,0">Reward win AI_2:</TextBlock>
-            <TextBox x:Name="Reward2" Width="40">1.0</TextBox>
-            <TextBlock Margin="10,0,0,0">Penalty loss AI_2:</TextBlock>
-            <TextBox x:Name="Penalty2" Width="40">-1.0</TextBox>
+        </StatusBar>
+        <StatusBar Grid.Row="2">
+            <TextBlock Margin="10,0,0,0" FontWeight="Bold">QLearning Parameters:</TextBlock>
+            <TextBlock Margin="10,0,0,0">AI α:</TextBlock>
+            <TextBox x:Name="AIZeroAlpha" Width="40">0.3</TextBox>
+            <TextBlock Margin="10,0,0,0">AI γ:</TextBlock>
+            <TextBox x:Name="AIZeroGamma" Width="40">0.99</TextBox>
+            <TextBlock Margin="10,0,0,0">AI ρ:</TextBlock>
+            <TextBox x:Name="AIZeroRho" Width="40">0.8</TextBox>
+            <TextBlock Margin="10,0,0,0">AI_2 α:</TextBlock>
+            <TextBox x:Name="AIOneAlpha" Width="40">0.3</TextBox>
+            <TextBlock Margin="10,0,0,0">AI_2 γ:</TextBlock>
+            <TextBox x:Name="AIOneGamma" Width="40">0.99</TextBox>
+            <TextBlock Margin="10,0,0,0">AI_2 ρ:</TextBlock>
+            <TextBox x:Name="AIOneRho" Width="40">0.8</TextBox>
+            <TextBlock Margin="10,0,0,0">(Learning rate α, Discount rate γ, Exploration rate ρ)</TextBlock>
+        </StatusBar>
+        <StatusBar x:Name="GameOutcomes" Grid.Row="3">
             <TextBlock Margin="10,0,0,0" FontWeight="Bold">Game outcomes:</TextBlock>
             <TextBlock Margin="10,0,0,0">Player Zero wins:</TextBlock>
             <Label x:Name="PlayerZeroWins" Width="60">0</Label>
@@ -48,7 +69,7 @@
             <TextBlock Margin="10,0,0,0">Draws:</TextBlock>
             <Label x:Name="Draws" Width="60">0</Label>
         </StatusBar>
-        <Grid Grid.Row="2" x:Name="GameGrid">
+        <Grid Grid.Row="4" x:Name="GameGrid">
             
         </Grid>
     </Grid>

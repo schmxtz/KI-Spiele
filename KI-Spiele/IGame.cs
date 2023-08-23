@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KI_Spiele.AI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -14,9 +15,9 @@ namespace KI_Spiele
     interface IGame
     {
         Player StartingPlayer { get; set; }
-        long PlayerZeroWins { get; set; }
-        long PlayerOneWins { get; set; }
-        long Draws { get; set; }
+        QLearning QLearningAIZero { get; set; }
+        QLearning QLearningAIOne { get; set; }
+
         /// <summary>
         /// Initializes the board and its necessary member variables.
         /// </summary>
@@ -31,7 +32,7 @@ namespace KI_Spiele
         /// Makes a move with the given action.
         /// </summary>
         /// <param name="action"></param>
-        double MakeMove(IAction action);
+        GameResult MakeMove(IAction action, bool updateGUI);
 
         /// <summary>
         ///
@@ -56,6 +57,9 @@ namespace KI_Spiele
         /// </summary>
         /// <returns></returns>
         Player GetNextPlayer();
+        void BindUICallback();
+        void UnbindUICallback();
+        IAction GetAction(byte row, byte column);
     }
 
     enum Player : byte

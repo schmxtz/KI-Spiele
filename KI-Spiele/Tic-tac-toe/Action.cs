@@ -8,10 +8,11 @@ namespace KI_Spiele.Tic_tac_toe
 {
     class Action : IAction
     { 
-        public Action() { }
-        /// <summary>
-        /// Move as piece placement with (row, column) tuple 
-        /// </summary>
+        public Action(byte row, byte column) 
+        {
+            Move = (row, column);
+        }
+
         public (byte Row, byte Column) Move { get; set; }
     }
 }

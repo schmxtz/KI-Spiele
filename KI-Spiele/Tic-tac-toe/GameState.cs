@@ -19,14 +19,11 @@ namespace KI_Spiele.Tic_tac_toe
         public GameState(Player startingPlayer) 
         {
             ResetBoard(startingPlayer);
+            InitActions();
         }
         #endregion
 
         #region --- Public Properties ---
-        // Reward for winning a game
-        public double Reward { get; set; } = 1.0;
-        // Penalty for losing a game
-        public double Penalty { get; set; } = -1.0;
         IGame Game { get; set; }
         #endregion
 
@@ -79,10 +76,7 @@ namespace KI_Spiele.Tic_tac_toe
                     { 
                         if (GameBoard[i][j] == Player.Undefined)
                         {
-                            actions.Add(new Action() 
-                            {
-                                Move = (i, j)
-                            });
+                            actions.Add(AllActions[i][j]);
                         }
                     }
                 }
@@ -96,7 +90,7 @@ namespace KI_Spiele.Tic_tac_toe
         /// <param name="a"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public double ExecuteAction(IAction a)
+        public GameResult ExecuteAction(IAction a)
         {
             Action action = (Action)a;
             // Check if tile is already in use.
@@ -119,27 +113,12 @@ namespace KI_Spiele.Tic_tac_toe
             GameBoard[action.Move.Row][action.Move.Column] = NextPlayer;
             // Update move number
             MoveNumber++;
-            // Update Current player
-            CurrentPlayer = NextPlayer;
+
             NextPlayer = (Player)((1 + (byte)NextPlayer) % 2);
 
             GameResult = CheckForWinner();
 
-            double result = 0.0;
-
-            if (GameResult != GameResult.NotFinished && GameResult != GameResult.Draw)
-            {
-                if (GameResult == GameResult.PlayerZero && CurrentPlayer == Player.Zero)
-                {
-                    result = Reward;
-                }
-                else
-                {
-                    result = Penalty;
-                }
-            }
-
-            return result;
+            return GameResult;
         }
 
         public GameResult GetGameState()
@@ -173,6 +152,23 @@ namespace KI_Spiele.Tic_tac_toe
         public Player GetNextPlayer()
         {
             return NextPlayer;
+        }
+
+        public IAction GetAction(byte row, byte column)
+        {
+            return AllActions[row][column];
+        }
+        #endregion
+
+        #region --- Private Init Functions ---
+        private void InitActions()
+        {
+            AllActions = new IAction[][]
+            {
+                new IAction[] { new Action(0, 0), new Action(0, 1), new Action(0, 2) },
+                new IAction[] { new Action(1, 0), new Action(1, 1), new Action(1, 2) },
+                new IAction[] { new Action(2, 0), new Action(2, 1), new Action(2, 2) },
+            };
         }
         #endregion
 
@@ -255,8 +251,8 @@ namespace KI_Spiele.Tic_tac_toe
         private byte MoveNumber;
         private GameResult GameResult;
         // Player who made the last move
-        private Player CurrentPlayer;
         private Player NextPlayer;
+        private IAction[][] AllActions;
         #endregion
     }
 }

@@ -23,5 +23,8 @@ namespace KI_Spiele
         void UpdateBoard(IAction action);
 
         void ResetBoard();
+
+        void BindUICallback();
+        void UnbindUICallback();
     }
 }
