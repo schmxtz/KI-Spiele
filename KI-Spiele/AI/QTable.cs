@@ -58,18 +58,12 @@ namespace KI_Spiele.AI
             // the quality of a state is defined as the quality of 
             // the best action available in this state
             double MaxValue = Double.MinValue;
-            foreach (var a in ValueTable[stateId].Keys)
+            foreach (var a in availableActions)
             {
-
-                // check again, if the action is contained in the list.
-                // Note that QLearning does not require the available
-                // actions to be consistens for a given state, i.e. the
-                // list of available actions in a given state may change
-                // over time
-                //if (!ValueTable[stateId].ContainsKey(a))
-                //{
-                //   ValueTable[stateId][a] = 0.0f;
-                //}
+                if (!ValueTable[stateId].ContainsKey(a))
+                {
+                    ValueTable[stateId][a] = 0.0f;
+                }
 
                 double value = ValueTable[stateId][a];
                 if (MaxValue < value)
@@ -159,7 +153,6 @@ namespace KI_Spiele.AI
                 }
                 return RandomList<IAction>.RandomEntry(bestActions);
             }
-
             return RandomList<IAction>.RandomEntry(game.GetMoves());
         }
         #endregion

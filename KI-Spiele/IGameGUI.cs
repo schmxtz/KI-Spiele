@@ -12,19 +12,31 @@ namespace KI_Spiele
     interface IGameGUI
     {
         /// <summary>
-        /// Initializes the board GUI on a given panel.
+        /// Initializes the board GUI on a given panel (window).
         /// </summary>
+        // TODO: Create an own interface for a MainWindow implementation and pass it as interface instead. Forces one to use the MainWindow-implementation, limiting the use of other GUIs.
         void InitializeBoard(IGame game, MainWindow window);
 
         /// <summary>
         /// Updates the current board with its given action.
         /// </summary>
+        /// <param name="player"></param>
         /// <param name="action"></param>
-        void UpdateBoard(IAction action);
+        void UpdateBoard(Player player, IAction action);
 
+        /// <summary>
+        /// Resets the visual representation back to an empty GameBoard.
+        /// </summary>
         void ResetBoard();
 
+        /// <summary>
+        /// Binds the function that's called on the MouseDown-Event.
+        /// </summary>
         void BindUICallback();
+
+        /// <summary>
+        /// Unbinds the function that's called on the MouseDown-Event.
+        /// </summary>
         void UnbindUICallback();
     }
 }

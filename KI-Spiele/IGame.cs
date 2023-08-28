@@ -15,50 +15,65 @@ namespace KI_Spiele
     interface IGame
     {
         Player StartingPlayer { get; set; }
-        QLearning QLearningAIZero { get; set; }
-        QLearning QLearningAIOne { get; set; }
 
         /// <summary>
-        /// Initializes the board and its necessary member variables.
+        /// Initializes the visual representation of the board.
         /// </summary>
         void InitializeBoard(MainWindow window);
 
         /// <summary>
-        /// Resets the game.
+        /// Resets game to an empty GameBoard.
         /// </summary>
         void ResetGame();
 
         /// <summary>
-        /// Makes a move with the given action.
+        /// <inheritdoc cref="IGameState.ExecuteAction(IAction)"/>   
         /// </summary>
-        /// <param name="action"></param>
+        /// <param name="action"> Action defining the move to make. </param>
+        /// <param name="updateGUI"> Flag, whether to update the GUI after making a move. </param>
+        /// <returns> The GameResult after the action was performed. Is not necessarily an end-state. </returns>
         GameResult MakeMove(IAction action, bool updateGUI);
 
         /// <summary>
-        ///
+        /// <inheritdoc cref="IGameState.PossibleActions"/>       
         /// </summary>
-        /// <returns></returns>
+        /// <returns> A list of valid moves that can be made in the current state. </returns>
         List<IAction> GetMoves();
 
         /// <summary>
-        /// 
+        /// <inheritdoc cref="IGameState.Id"/>       
         /// </summary>
-        /// <returns></returns>
+        /// <returns> The current state of the game formatted as a number. </returns>
         BigInteger GetGameStateId();
 
         /// <summary>
-        /// 
+        /// <inheritdoc cref="IGameState.GetGameState"/>   
         /// </summary>
-        /// <returns></returns>
+        /// <returns> The GameResult for the current on-going game. </returns>
         GameResult GetGameResult();
 
         /// <summary>
-        /// 
+        /// <inheritdoc cref="IGameState.GetNextPlayer"/>   
         /// </summary>
-        /// <returns></returns>
+        /// <returns> Player that is to make the next move. </returns>
         Player GetNextPlayer();
+
+        /// <summary>
+        /// <inheritdoc cref="IGameGUI.BindUICallback"/>  
+        /// </summary>
         void BindUICallback();
+
+        /// <summary>
+        /// <inheritdoc cref="IGameGUI.UnbindUICallback"/>       
+        /// </summary>
         void UnbindUICallback();
+
+        /// <summary>
+        /// <inheritdoc cref="IGameState.GetAction"/>       
+        /// </summary>
+        /// <param name="row"> Depending on the implementation can be left empty/passed in with a 0. </param>
+        /// <param name="column"> Depending on the implementation can be left empty/passed in with a 0. </param>
+        /// <returns> Re-use of the same object, when given the same row/column. </returns>
         IAction GetAction(byte row, byte column);
     }
 

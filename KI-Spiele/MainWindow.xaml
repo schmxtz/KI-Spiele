@@ -11,6 +11,9 @@
         <BitmapImage x:Key="TicBoard" UriSource="Tic-tac-toe/images/board.png"/>
         <BitmapImage x:Key="TicPZero" UriSource="Tic-tac-toe/images/circle.png"/>
         <BitmapImage x:Key="TicPOne" UriSource="Tic-tac-toe/images/cross.png"/>
+        <BitmapImage x:Key="Connect4Board" UriSource="Connect Four/images/board.png"/>
+        <BitmapImage x:Key="Connect4PZero" UriSource="Connect Four/images/PLAYERZERO.png"/>
+        <BitmapImage x:Key="Connect4POne" UriSource="Connect Four/images/PLAYERONE.png"/>
     </Window.Resources>
 
     <Grid>
@@ -36,6 +39,14 @@
                 <TextBlock   Margin="5,0,0,0">Progress:</TextBlock>
                 <ProgressBar x:Name="Progress" Margin="0,0,10,0" Height="10" Width="60" Value="0"/>
             </StatusBar>
+            <TextBlock Margin="10,0,0,0">Next player:</TextBlock>
+            <TextBox x:Name="NextPlayer" Width="80"></TextBox>
+            <TextBlock Margin="10,0,0,0">Player 0:</TextBlock>
+            <Rectangle x:Name="Player0Preview" Width="25" Height="25">
+            </Rectangle>
+            <TextBlock Margin="10,0,0,0">Player 1:</TextBlock>
+            <Rectangle x:Name="Player1Preview" Width="25" Height="25">
+            </Rectangle>
         </StatusBar>
         <StatusBar Grid.Row="1">
             <TextBlock Margin="10,0,0,0" FontWeight="Bold">Reward Function:</TextBlock>

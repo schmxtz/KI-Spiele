@@ -19,27 +19,39 @@ namespace KI_Spiele.Tic_tac_toe
 
         #region --- Public Properties ---
         public Player StartingPlayer { get; set; }
-        public QLearning QLearningAIZero { get; set; }
-        public QLearning QLearningAIOne { get; set; }
         #endregion
 
         #region --- Public Member Functions ---
         #endregion
 
-        #region --- IGameState Interface Implementation ----
+        #region --- IGame Interface Implementation ---
+        /// <summary>
+        /// Implements <see cref="IGame.InitializeBoard(MainWindow)"/>
+        /// </summary>
+        /// <param name="window"></param>
         public void InitializeBoard(MainWindow window)
         {
             GameGUI.InitializeBoard(this, window);
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.MakeMove(IAction, bool)"/>
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="updateGUI"></param>
+        /// <returns></returns>
         public GameResult MakeMove(IAction action, bool updateGUI = true)
         {
+            Player nextPlayer = GameState.GetNextPlayer();
+            // Update the GameState
             GameResult result = GameState.ExecuteAction(action);
             if (updateGUI)
             {
-                GameGUI.UpdateBoard(action);
+                // Update the GameGUI if needed
+                GameGUI.UpdateBoard(nextPlayer, action);
             }            
 
+            // Reset Game if it's finished
             if (result != GameResult.NotFinished)
             {
                 ResetGame();
@@ -48,42 +60,66 @@ namespace KI_Spiele.Tic_tac_toe
             return result;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.ResetGame"/>
+        /// </summary>
         public void ResetGame()
         {
             GameState.ResetBoard(StartingPlayer);
             GameGUI.ResetBoard();
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.GetMoves"/>
+        /// </summary>
         public List<IAction> GetMoves()
         {
             return GameState.PossibleActions;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.GetGameStateId"/>
+        /// </summary>
         public BigInteger GetGameStateId()
         {
             return GameState.Id;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.GetGameResult"/>
+        /// </summary>
         public GameResult GetGameResult()
         {
             return GameState.GetGameState();
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.GetNextPlayer"/>
+        /// </summary>
         public Player GetNextPlayer()
         {
             return GameState.GetNextPlayer();
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.BindUICallback"/>
+        /// </summary>
         public void BindUICallback()
         {
             GameGUI.BindUICallback();
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.UnbindUICallback"/>
+        /// </summary>
         public void UnbindUICallback()
         {
             GameGUI.UnbindUICallback();
         }
 
+        /// <summary>
+        /// Implements <see cref="IGame.GetAction"/>
+        /// </summary>
         public IAction GetAction(byte row, byte column)
         {
             return GameState.GetAction(row, column);

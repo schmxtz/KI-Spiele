@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KI_Spiele.Connect_Four;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,13 +14,27 @@ namespace KI_Spiele.Tic_tac_toe
         #region --- Public Properties ---
         public double CellSize { get; set; } = 300;
         public double CellInnerPad { get; set; } = 10;
+        #endregion
+
+        #region --- IGameGUI Interface Implementation ---
+        /// <summary>
+        /// Implements <see cref="IGameGUI.InitializeBoard(IGame, MainWindow)"/>
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="window"></param>
         public void InitializeBoard(IGame game, MainWindow window)
         {
             MainWindow = window;
             Game = game;
+
+            // Calculate GameBoard GUI based on CellSize
             window.GameGrid.Width = 3 * CellSize;
             window.GameGrid.Height = 3 * CellSize;
+
+            // Set background
             window.GameGrid.Background = new ImageBrush((ImageSource)window.FindResource("TicBoard"));
+
+            // Initialize the 3x3 grid in which tiles are placed
             for (int i = 0; i < 3; i++)
             {
                 var columnDefinition = new ColumnDefinition();
@@ -27,17 +42,33 @@ namespace KI_Spiele.Tic_tac_toe
                 window.GameGrid.ColumnDefinitions.Add(columnDefinition);
                 window.GameGrid.RowDefinitions.Add(rowDefinition);
             }
-        }
-        #endregion
 
-        public void UpdateBoard(IAction action)
+            // Update GUI, which player is to make the next move
+            Player startingPlayer = game.GetNextPlayer();
+            window.NextPlayer.Text = startingPlayer.ToString();
+
+            // Set the image previews for PlayerZero and PlayerOne
+            MainWindow.Player0Preview.Fill = new ImageBrush((ImageSource)window.FindResource("TicPZero"));
+            MainWindow.Player1Preview.Fill = new ImageBrush((ImageSource)window.FindResource("TicPOne"));
+        }
+
+        /// <summary>
+        /// Implements <see cref="IGameGUI.UpdateBoard(IAction)"/>
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="action"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public void UpdateBoard(Player player, IAction action)
         {
-            Player player = Game.GetNextPlayer();
             Action a = (Action)action;
+
+            // Setup image 
             Rectangle rect = new Rectangle();
             rect.Width = CellSize - CellInnerPad;
             rect.Height = CellSize - CellInnerPad;
             ImageBrush imageBrush;
+
+            // Choose the tile-image based on the next player
             switch (player)
             {
                 case Player.Zero:
@@ -51,10 +82,18 @@ namespace KI_Spiele.Tic_tac_toe
                 default:
                     throw new ArgumentException("Could not place correct tile.");
             }
+
+            // Place tile in the given row/column
             Grid.SetRow(rect, a.Move.Row);
             Grid.SetColumn(rect, a.Move.Column);
             MainWindow.GameGrid.Children.Add(rect);
 
+            // Update GUI, which player is to make the next move
+            Player startingPlayer = Game.GetNextPlayer();
+            MainWindow.NextPlayer.Text = startingPlayer.ToString();
+
+            // Update game-outcome statistics
+            // TODO: Move this part to the Game implementation so that it also updates the score even if the GUI doens't draw each move
             GameResult result = Game.GetGameResult();
             if (result != GameResult.NotFinished)
             {
@@ -73,28 +112,48 @@ namespace KI_Spiele.Tic_tac_toe
             }
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameGUI.ResetBoard"/>
+        /// </summary>
         public void ResetBoard()
         {
+            // Clears all placed tiles
             MainWindow.GameGrid.Children.Clear();
+
+            // Update GUI, which player is to make the next move
+            Player startingPlayer = Game.GetNextPlayer();
+            MainWindow.NextPlayer.Text = startingPlayer.ToString();
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameGUI.BindUICallback"/>
+        /// </summary>
         public void BindUICallback()
         {
             MainWindow.MouseDown += GameGrid_MouseDown;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameGUI.UnbindUICallback"/>
+        /// </summary>
         public void UnbindUICallback()
         {
             MainWindow.MouseDown -= GameGrid_MouseDown;
 
         }
+        #endregion
 
+        #region --- Callbacks ---
         private void GameGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            // Gets mouse position relative to the GameBoard, meaning that the most top left tile has the position (0, 0) and
+            // the most bottom right one has the position (3 * CellSize, 3 * CellSize).
+            // With this, one can abuse this to convert the mouse position to the actual index of row/column.
             var mouseXY = e.GetPosition(MainWindow.GameGrid);
             byte row = (byte)(mouseXY.Y / CellSize);
             byte col = (byte)(mouseXY.X / CellSize);
             
+            // Check whether user has clicked inside the bounding box
             if (mouseXY.X < 0 || mouseXY.X > 3 * CellSize || mouseXY.Y < 0 || mouseXY.Y > 3 * CellSize)
             {
                 return;
@@ -106,9 +165,11 @@ namespace KI_Spiele.Tic_tac_toe
             }
             catch (ArgumentException error)
             {
+                // Display error if user tried to make invalid move
                 MessageBox.Show(error.Message);
             }
         }
+        #endregion
 
         private MainWindow MainWindow;
         private IGame Game;

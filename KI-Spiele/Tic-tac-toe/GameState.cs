@@ -24,17 +24,20 @@ namespace KI_Spiele.Tic_tac_toe
         #endregion
 
         #region --- Public Properties ---
-        IGame Game { get; set; }
         #endregion
 
         #region --- Public Member Functions ---
         #endregion
 
-        #region --- IGameState Interface Implementation ----
+        #region --- IGameState Interface Implementation ---
+        /// <summary>
+        /// Implements <see cref="IGameState.Id"/>
+        /// </summary>
         public BigInteger Id
         {
             get
             {
+                // Leading one
                 BigInteger result = 1;
                 for (int i = 0; i < GameBoard.Length; i++)
                 {
@@ -42,6 +45,7 @@ namespace KI_Spiele.Tic_tac_toe
                     {
                         switch (GameBoard[i][j])
                         {
+                            // Allocate next two bits and add the bit-value of the tile
                             case Player.Zero:
                                 result <<= 2;
                                 result += (byte)Player.Zero;
@@ -62,8 +66,7 @@ namespace KI_Spiele.Tic_tac_toe
         }
 
         /// <summary>
-        /// Iterates over the gameboard and returns the indices of all remaining
-        /// empty files.
+        /// Implements <see cref="IGameState.PossibleActions"/>
         /// </summary>
         public List<IAction> PossibleActions
         {
@@ -74,6 +77,7 @@ namespace KI_Spiele.Tic_tac_toe
                 {
                     for (byte j = 0; j < GameBoard[i].Length; j++)
                     { 
+                        // If tile is empty, valid move can be made
                         if (GameBoard[i][j] == Player.Undefined)
                         {
                             actions.Add(AllActions[i][j]);
@@ -87,9 +91,9 @@ namespace KI_Spiele.Tic_tac_toe
         /// <summary>
         /// Implements <see cref="IGameState.ExecuteAction(IAction)"/>
         /// </summary>
-        /// <param name="a"></param>
+        /// <param name="a"> Action that is to be performed. </param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException"> Thrown if player tries to make an invalid move. </exception>
         public GameResult ExecuteAction(IAction a)
         {
             Action action = (Action)a;
@@ -111,23 +115,33 @@ namespace KI_Spiele.Tic_tac_toe
 
             // Update the GameBoard to the current action.
             GameBoard[action.Move.Row][action.Move.Column] = NextPlayer;
+
             // Update move number
             MoveNumber++;
 
+            // Update next player
             NextPlayer = (Player)((1 + (byte)NextPlayer) % 2);
 
+            // Check for GameResult and return it
             GameResult = CheckForWinner();
 
             return GameResult;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.GetGameState"/>
+        /// </summary>
         public GameResult GetGameState()
         {
             return GameResult;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.ResetBoard(Player)"/>
+        /// </summary>
         public void ResetBoard(Player startingPlayer)
         {
+            // Reset GameBoard and corresponding member variables
             GameBoard = new Player[][]
             {
                 new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined },
@@ -138,22 +152,28 @@ namespace KI_Spiele.Tic_tac_toe
             MoveNumber = 0;
 
             NextPlayer = startingPlayer;
+            // If startingPlayer is not to a specific player, choose one randomly.
             if (NextPlayer == Player.Undefined)
-            {
-                Random random = new Random();
+            {                
                 NextPlayer = (Player)random.Next(0, 2);
             }
         }
 
         /// <summary>
-        /// R
+        /// Implements <see cref="IGameState.GetNextPlayer"/>
         /// </summary>
-        /// <returns></returns>
+        /// <returns> Player that is to make the next move. </returns>
         public Player GetNextPlayer()
         {
             return NextPlayer;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.GetAction(byte, byte)"/>
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        /// <returns> Re-used action for given row and column stored inside AllActions. </returns>
         public IAction GetAction(byte row, byte column)
         {
             return AllActions[row][column];
@@ -161,6 +181,9 @@ namespace KI_Spiele.Tic_tac_toe
         #endregion
 
         #region --- Private Init Functions ---
+        /// <summary>
+        /// Initializes all valid actions and stores them inside a 2D-Array.
+        /// </summary>
         private void InitActions()
         {
             AllActions = new IAction[][]
@@ -175,25 +198,26 @@ namespace KI_Spiele.Tic_tac_toe
         #region --- Private Helper Functions ---
         private GameResult CheckForWinner()
         {
+            // Check for all possible ways a game can end.
             GameResult columnResult = CheckColumn();
-            GameResult rowResult = CheckRow();
-            GameResult diagonalResult = CheckDiagonal();
-
             if (columnResult != GameResult.NotFinished)
             {
                 return columnResult;
             }
 
+            GameResult rowResult = CheckRow();
             if (rowResult != GameResult.NotFinished)
             {
                 return rowResult;
             }
 
+            GameResult diagonalResult = CheckDiagonal();
             if (diagonalResult != GameResult.NotFinished)
             {
                 return diagonalResult;
             }
 
+            // If no winner can be determined and all possible moves have been made, it's a draw.
             if (MoveNumber == 9)
             {
                 return GameResult.Draw;
@@ -247,12 +271,14 @@ namespace KI_Spiele.Tic_tac_toe
         #endregion
 
         #region --- Private Members ---
+        // GameBoard is 3x3 2D-array with first index specifying the row and second index specifying the column
         private Player[][] GameBoard;
         private byte MoveNumber;
         private GameResult GameResult;
         // Player who made the last move
         private Player NextPlayer;
         private IAction[][] AllActions;
+        private Random random = new Random();
         #endregion
     }
 }

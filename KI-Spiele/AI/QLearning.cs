@@ -59,7 +59,7 @@ namespace KI_Spiele.AI
                 if (result != GameResult.NotFinished)
                 {
                     var (r1, r2) = (1.0, 1.0);
-                    if (result == GameResult.PlayerOne || result == GameResult.PlayerZero) { (r1, r2) = (1.0, -100.0); };
+                    if (result == GameResult.PlayerOne || result == GameResult.PlayerZero) { (r1, r2) = (1.0, -1.0); };
                     UpdateTable(r1);
                     OtherAI.UpdateTable(r2);
                 }
@@ -68,7 +68,6 @@ namespace KI_Spiele.AI
 
             a = LearnedTable.BestActionNoLearning(currentState, Game);
             return Game.MakeMove(a, true);
-
         }
 
 

@@ -1,9 +1,7 @@
 ﻿using KI_Spiele.AI;
-using KI_Spiele.Tic_tac_toe;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Numerics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,6 +19,7 @@ namespace KI_Spiele
             InitializeComponent();
             CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
             InitializeGUI();
+            InitializeTimer();
             SetGame("Tic-tac-toe");
         }
 
@@ -60,9 +59,12 @@ namespace KI_Spiele
                     GameGrid.ColumnDefinitions.Clear();
                     SelectedGame.InitializeBoard(this);
                     break;
-                //case "connect four":
-                //    selectedgame = new ki_spiele.connect_four.game();
-                //    break;
+                case "Connect Four":
+                    GameGrid.Children.Clear();
+                    GameGrid.RowDefinitions.Clear();
+                    GameGrid.ColumnDefinitions.Clear();
+                    SelectedGame.InitializeBoard(this);
+                    break;
             }
         }
 
@@ -82,24 +84,22 @@ namespace KI_Spiele
             };
             QLearningAIZero.OtherAI = QLearningAIOne;
             QLearningAIOne.OtherAI = QLearningAIZero;
-            SelectedGame.QLearningAIZero = QLearningAIZero;
-            SelectedGame.QLearningAIOne = QLearningAIOne;
             QLearningAIZero.Game = SelectedGame;
             QLearningAIOne.Game = SelectedGame;
         }
 
-        //private void InitializeTimer()
-        //{
-        //    if (null != Timer)
-        //    {
-        //        Timer.Stop();
-        //    }
-        //    else
-        //    {
-        //        Timer = new DispatcherTimer();
-        //        Timer.Tick += LearnStep;
-        //    }
-        //}
+        private void InitializeTimer()
+        {
+            if (null != Timer)
+            {
+                Timer.Stop();
+            }
+            else
+            {
+                Timer = new DispatcherTimer();
+                Timer.Tick += LearnStep;
+            }
+        }
 
         private void GameSelected(object sender, SelectionChangedEventArgs e)
         {
@@ -109,6 +109,7 @@ namespace KI_Spiele
 
         private void SetGame(string game)
         {
+            Timer.Stop();
             if (SelectedGame != null)
             {
                 SelectedGame.UnbindUICallback();
@@ -118,9 +119,9 @@ namespace KI_Spiele
                 case "Tic-tac-toe":                   
                     SelectedGame = new Tic_tac_toe.Game((Player)StartingPlayer.SelectedIndex);
                     break;
-                    //case "connect four":
-                    //    selectedgame = new ki_spiele.connect_four.game();
-                    //    break;
+                case "Connect Four":
+                    SelectedGame = new Connect_Four.Game((Player)StartingPlayer.SelectedIndex);
+                    break;
             }
             InitializeGameGUI();
             SetMode((string)ModeSelect.SelectedItem);
@@ -162,33 +163,7 @@ namespace KI_Spiele
             double penalty = double.Parse(Penalty.Text);
             NumberIterations = long.Parse(NumIterations.Text);
 
-            // StartTimer(0.001);
-
-            while (CurrentIteration < NumberIterations)
-            {
-                LearnStep();
-            }
-
-            int matchesPlayed = 0;
-            SelectedGame.ResetGame();
-            while (matchesPlayed < 100)
-            {
-                Player curPlayer = SelectedGame.GetNextPlayer();
-                if (curPlayer == Player.Zero)
-                {
-                    if (QLearningAIZero.MakeMove(false) != GameResult.NotFinished) matchesPlayed++;
-                }
-                if (curPlayer == Player.One)
-                {
-                    if (QLearningAIOne.MakeMove(false) != GameResult.NotFinished) matchesPlayed++;
-                }
-            }
-            Console.WriteLine(PlayerZeroWins.ToString() + " " + PlayerOneWins.ToString() + " " + Draws.ToString());
-            ZeroMadeMoves = 0;
-            OneMadeMoves = 0;
-            PlayerZeroWins.Content = 0;
-            PlayerOneWins.Content = 0;
-            Draws.Content = 0;
+            StartTimer(0.001);
         }
 
         private void StartTimer(double seconds)
@@ -200,7 +175,7 @@ namespace KI_Spiele
         }
 
         // private void LearnStep(object sender, EventArgs e)
-        private void LearnStep()
+        private void LearnStep(object sender, EventArgs e)
         {
             long LearnPhase = NumberIterations / 4;
             long LearnSteps = LearnPhase / 100;
@@ -253,7 +228,7 @@ namespace KI_Spiele
             }
             else
             {
-                //Timer.Stop();
+                Timer.Stop();
                 SelectedGame.ResetGame();
             }
         }

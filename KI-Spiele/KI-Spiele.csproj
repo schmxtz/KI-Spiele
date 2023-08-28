@@ -57,6 +57,10 @@
     <Compile Include="AI\QLearning.cs" />
     <Compile Include="AI\QTable.cs" />
     <Compile Include="AI\Util.cs" />
+    <Compile Include="Connect Four\Action.cs" />
+    <Compile Include="Connect Four\Game.cs" />
+    <Compile Include="Connect Four\GameGUI.cs" />
+    <Compile Include="Connect Four\GameState.cs" />
     <Compile Include="Tic-tac-toe\Action.cs" />
     <Compile Include="Tic-tac-toe\Game.cs" />
     <Compile Include="Tic-tac-toe\GameGUI.cs" />
@@ -107,6 +111,14 @@
     <Resource Include="Tic-tac-toe\images\circle.png" />
     <Resource Include="Tic-tac-toe\images\cross.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Connect Four\images\board.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Connect Four\images\PLAYERONE.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Connect Four\images\PLAYERZERO.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
