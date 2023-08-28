@@ -91,25 +91,6 @@ namespace KI_Spiele.Tic_tac_toe
             // Update GUI, which player is to make the next move
             Player startingPlayer = Game.GetNextPlayer();
             MainWindow.NextPlayer.Text = startingPlayer.ToString();
-
-            // Update game-outcome statistics
-            // TODO: Move this part to the Game implementation so that it also updates the score even if the GUI doens't draw each move
-            GameResult result = Game.GetGameResult();
-            if (result != GameResult.NotFinished)
-            {
-                switch (result)
-                {
-                    case GameResult.PlayerZero:
-                        MainWindow.PlayerZeroWins.Content = long.Parse(MainWindow.PlayerZeroWins.Content.ToString()) + 1;
-                        break;
-                    case GameResult.PlayerOne:
-                        MainWindow.PlayerOneWins.Content = long.Parse(MainWindow.PlayerOneWins.Content.ToString()) + 1;
-                        break;
-                    case GameResult.Draw:
-                        MainWindow.Draws.Content = long.Parse(MainWindow.Draws.Content.ToString()) + 1;
-                        break;
-                }
-            }
         }
 
         /// <summary>
@@ -171,7 +152,9 @@ namespace KI_Spiele.Tic_tac_toe
         }
         #endregion
 
+        #region --- Private Members ---
         private MainWindow MainWindow;
         private IGame Game;
+        #endregion
     }
 }

@@ -47,14 +47,15 @@ namespace KI_Spiele.Tic_tac_toe
             GameResult result = GameState.ExecuteAction(action);
             if (updateGUI)
             {
-                // Update the GameGUI if needed
+                // Update the GameGUI if needed, e.g. this is disabled during training,
+                // to speed up performance
                 GameGUI.UpdateBoard(nextPlayer, action);
             }            
 
             // Reset Game if it's finished
             if (result != GameResult.NotFinished)
             {
-                ResetGame();
+                ResetGame(updateGUI);
             }
 
             return result;
@@ -62,11 +63,15 @@ namespace KI_Spiele.Tic_tac_toe
 
         /// <summary>
         /// Implements <see cref="IGame.ResetGame"/>
+        /// <param name="updateGUI"></param>
         /// </summary>
-        public void ResetGame()
+        public void ResetGame(bool updateGUI = true)
         {
             GameState.ResetBoard(StartingPlayer);
-            GameGUI.ResetBoard();
+            if (updateGUI)
+            {
+                GameGUI.ResetBoard();
+            }
         }
 
         /// <summary>

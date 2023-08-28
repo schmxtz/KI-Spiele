@@ -14,10 +14,13 @@ namespace KI_Spiele.Connect_Four
 {
     class GameGUI : IGameGUI
     {
+        #region --- Constructor ---
         public GameGUI() 
         {
+            // Array to store row index of last placed tile
             LastRowMoves = new int[] { 0, 0, 0, 0, 0, 0, 0 };
         }
+        #endregion
 
         #region --- Public Properties ---
         public double CellSize { get; set; } = 150;
@@ -28,18 +31,33 @@ namespace KI_Spiele.Connect_Four
         #endregion
 
         #region --- IGameGUI Interface Implementation ---
+
+        /// <summary>
+        /// Implements <see cref="IGameGUI.BindUICallback"/>
+        /// </summary>
         public void BindUICallback()
         {
             MainWindow.MouseDown += GameGrid_MouseDown;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameGUI.InitializeBoard(IGame, MainWindow)"/>
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="window"></param>
         public void InitializeBoard(IGame game, MainWindow window)
         {
             MainWindow = window;
             Game = game;
+
+            // Calculate GameBoard GUI based on CellSize
             window.GameGrid.Width = 7 * CellSize;
             window.GameGrid.Height = 6 * CellSize;
+
+            // Set background
             window.GameGrid.Background = new ImageBrush((ImageSource)window.FindResource("Connect4Board"));
+
+            // Initialize the 6x7 grid in which tiles are placed
             window.GameGrid.ColumnDefinitions.Add(new ColumnDefinition());
             for (int i = 0; i < 6; i++)
             {
@@ -58,9 +76,15 @@ namespace KI_Spiele.Connect_Four
             MainWindow.Player1Preview.Fill = new ImageBrush((ImageSource)window.FindResource("Connect4POne"));
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameGUI.ResetBoard"/>
+        /// </summary>
         public void ResetBoard()
         {
+            // Reset indices of last placed rows
             LastRowMoves = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+
+            // Clears all placed tiles
             MainWindow.GameGrid.Children.Clear();
 
             // Update GUI, which player is to make the next move
@@ -68,19 +92,29 @@ namespace KI_Spiele.Connect_Four
             MainWindow.NextPlayer.Text = startingPlayer.ToString();
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameGUI.UnbindUICallback"/>
+        /// </summary>
         public void UnbindUICallback()
         {
             MainWindow.MouseDown -= GameGrid_MouseDown;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameGUI.UpdateBoard(IAction)"/>
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="action"></param>
+        /// <exception cref="ArgumentException"></exception>
         public void UpdateBoard(Player player, IAction action)
         {
             Action a = (Action)action;
+
+            // Setup image 
             Rectangle rect = new Rectangle();
-            //rect.Width = CellSize - CellInnerPad;
-            //rect.Height = CellSize - CellInnerPad;
             ImageBrush imageBrush;
 
+            // Choose the tile-image based on the next player
             switch (player)
             {
                 case Player.Zero:
@@ -95,40 +129,28 @@ namespace KI_Spiele.Connect_Four
                     throw new ArgumentException("Could not place correct tile.");
             }
 
+            // Place tile in the given row/column
+            // Increment row index of last placed tile
             Grid.SetRow(rect, 5 - LastRowMoves[a.Move]++);
             Grid.SetColumn(rect, a.Move);
-
             MainWindow.GameGrid.Children.Add(rect);
 
             // Update GUI, which player is to make the next move
             Player startingPlayer = Game.GetNextPlayer();
             MainWindow.NextPlayer.Text = startingPlayer.ToString();
-
-            GameResult result = Game.GetGameResult();
-            if (result != GameResult.NotFinished)
-            {
-                switch (result)
-                {
-                    case GameResult.PlayerZero:
-                        MainWindow.PlayerZeroWins.Content = long.Parse(MainWindow.PlayerZeroWins.Content.ToString()) + 1;
-                        break;
-                    case GameResult.PlayerOne:
-                        MainWindow.PlayerOneWins.Content = long.Parse(MainWindow.PlayerOneWins.Content.ToString()) + 1;
-                        break;
-                    case GameResult.Draw:
-                        MainWindow.Draws.Content = long.Parse(MainWindow.Draws.Content.ToString()) + 1;
-                        break;
-                }
-            }
         }
         #endregion
 
-        #region --- Private Helper Functions ---
+        #region --- Callbacks ---
         private void GameGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            // Gets mouse position relative to the GameBoard, meaning that the most top left tile has the x-coordinate 0 and
+            // the most right one has the x-coordinate 7 * CellSize.
+            // With this, one can abuse this to convert the mouse position to the actual index of row/column.
             var mouseXY = e.GetPosition(MainWindow.GameGrid);
             byte col = (byte)(mouseXY.X / CellSize);
 
+            // Check whether user has clicked inside the bounding box
             if (mouseXY.X < 0 || mouseXY.X > 7 * CellSize)
             {
                 return;
@@ -140,15 +162,17 @@ namespace KI_Spiele.Connect_Four
             }
             catch (ArgumentException error)
             {
+                // Display error if user tried to make invalid move
                 MessageBox.Show(error.Message);
             }
         }
         #endregion
 
+        #region --- Private Members ---
         private MainWindow MainWindow;
-        private IGame Game;
-        
+        private IGame Game;        
         // TODO: Don't save the used row inside GUI to avoid out-of-snyc between GameState and GUI
         private int[] LastRowMoves;
+        #endregion
     }
 }

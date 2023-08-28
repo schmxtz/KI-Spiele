@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace KI_Spiele.AI
 {
+    // Credit: KI-Spiele QLearning2 Handout - Prof. Dr.-Ing. Christof Rezk-Salama
     class QTable
     {
         #region --- Constructor ---

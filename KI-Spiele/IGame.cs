@@ -23,8 +23,9 @@ namespace KI_Spiele
 
         /// <summary>
         /// Resets game to an empty GameBoard.
+        /// <param name="updateGUI"></param>
         /// </summary>
-        void ResetGame();
+        void ResetGame(bool updateGUI);
 
         /// <summary>
         /// <inheritdoc cref="IGameState.ExecuteAction(IAction)"/>   

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KI_Spiele"
         mc:Ignorable="d"
-        Title="KI-Spiele" Height="1100" Width="1280">
+        Title="KI-Spiele" Height="1200" Width="1600">
 
     <Window.Resources>
         <BitmapImage x:Key="TicBoard" UriSource="Tic-tac-toe/images/board.png"/>
@@ -31,14 +31,9 @@
             <ComboBox x:Name="ModeSelect" Width="100" SelectedIndex="0" Focusable="False"></ComboBox>
             <TextBlock>Starting Player</TextBlock>
             <ComboBox x:Name="StartingPlayer" Width="100" SelectedIndex="0" Focusable="False"></ComboBox>
-            <StatusBar x:Name="TrainGUI" Visibility="Hidden">
-                <TextBlock Margin="5,0,0,0" >Num Iterations:</TextBlock>
-                <TextBox x:Name="NumIterations" 
-                      Margin="0,0,5,0"  Width="80" TextAlignment="Right">100000</TextBox>
-                <Button x:Name="TrainButton" Margin="10,0,5,0" Width="70" Click="StartTraining">Train</Button>
-                <TextBlock   Margin="5,0,0,0">Progress:</TextBlock>
-                <ProgressBar x:Name="Progress" Margin="0,0,10,0" Height="10" Width="60" Value="0"/>
-            </StatusBar>
+            <Separator/>
+            <Button x:Name="ResetGame" Margin="10,0,10,0" Width="70" Click="ResetGameBtn">Reset Game</Button>
+            <Separator/>
             <TextBlock Margin="10,0,0,0">Next player:</TextBlock>
             <TextBox x:Name="NextPlayer" Width="80"></TextBox>
             <TextBlock Margin="10,0,0,0">Player 0:</TextBlock>
@@ -47,6 +42,14 @@
             <TextBlock Margin="10,0,0,0">Player 1:</TextBlock>
             <Rectangle x:Name="Player1Preview" Width="25" Height="25">
             </Rectangle>
+            <StatusBar x:Name="TrainGUI" Visibility="Hidden">
+                <TextBlock Margin="5,0,0,0" >Num Iterations:</TextBlock>
+                <TextBox x:Name="NumIterations" 
+                      Margin="0,0,5,0"  Width="80" TextAlignment="Right">100000</TextBox>
+                <Button x:Name="TrainButton" Margin="10,0,5,0" Width="70" Click="StartTraining">Train</Button>
+                <TextBlock   Margin="5,0,0,0">Progress:</TextBlock>
+                <ProgressBar x:Name="Progress" Margin="0,0,10,0" Height="10" Width="60" Value="0"/>
+            </StatusBar>
         </StatusBar>
         <StatusBar Grid.Row="1">
             <TextBlock Margin="10,0,0,0" FontWeight="Bold">Reward Function:</TextBlock>
@@ -79,6 +82,17 @@
             <Label x:Name="PlayerOneWins" Width="60">0</Label>
             <TextBlock Margin="10,0,0,0">Draws:</TextBlock>
             <Label x:Name="Draws" Width="60">0</Label>
+            <Separator/>
+            <StatusBar x:Name="SimulateGUI" Visibility="Visible">
+                <TextBlock Margin="5,0,0,0" >Num of Games:</TextBlock>
+                <TextBox x:Name="NumGames" 
+                      Margin="0,0,5,0"  Width="80" TextAlignment="Right">1000</TextBox>
+                <TextBlock Margin="5,0,0,0" >Animate?</TextBlock>
+                <CheckBox x:Name="IsSimulated"></CheckBox>
+                <Button x:Name="SimulateButton" Margin="10,0,5,0" Width="70" Click="StartSimulation">Simulate</Button>
+                <TextBlock   Margin="5,0,0,0">Progress:</TextBlock>
+                <ProgressBar x:Name="ProgressSimulate" Margin="0,0,10,0" Height="10" Width="60" Value="0"/>
+            </StatusBar>
         </StatusBar>
         <Grid Grid.Row="4" x:Name="GameGrid">
             

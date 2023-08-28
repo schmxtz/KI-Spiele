@@ -24,19 +24,23 @@ namespace KI_Spiele.Connect_Four
         #endregion
 
         #region --- Public Properties ---
-        IGame Game { get; set; }
         #endregion
 
         #region --- IGameState Interface Implementation ----
+        /// <summary>
+        /// Implements <see cref="IGameState.Id"/>
+        /// </summary>
         public BigInteger Id
         {
             get
             {
+                // Leading one, so that leading zeros are not truncated
                 BigInteger result = 1;
                 for (int i = 0; i < GameBoard.Length; i++)
                 {
                     for (int j = 0; j < GameBoard.Length; j++)
                     {
+                        // Allocate next two bits and add the bit-value of the tile
                         switch (GameBoard[i][j])
                         {
                             case Player.Zero:
@@ -58,6 +62,9 @@ namespace KI_Spiele.Connect_Four
             }
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.PossibleActions"/>
+        /// </summary>
         public List<IAction> PossibleActions
         {
             get
@@ -65,6 +72,7 @@ namespace KI_Spiele.Connect_Four
                 List<IAction> actions = new List<IAction>();
                 for (int i = 0; i < GameBoard[0].Length; i++)
                 {
+                    // If the tile in the top row is empty, valid move can be made inside column
                     if (GameBoard[0][i] == Player.Undefined)
                     {
                         actions.Add(AllActions[i]);
@@ -74,6 +82,12 @@ namespace KI_Spiele.Connect_Four
             }
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.ExecuteAction(IAction)"/>
+        /// </summary>
+        /// <param name="a"> Action that is to be performed. </param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"> Thrown if player tries to make an invalid move. </exception>
         public GameResult ExecuteAction(IAction a)
         {
             Action action = (Action)a;
@@ -92,8 +106,12 @@ namespace KI_Spiele.Connect_Four
             {
                 throw new ArgumentException("Game is already finished!");
             }
+
+            // Save in which row the tile was placed
             int row = 0;
+
             // Update the GameBoard to the current action.
+            // Need to loop through rows from bottom to top
             for (int i = GameBoard.Length - 1; i >= 0; i--)
             {
                 if (GameBoard[i][action.Move] == Player.Undefined)
@@ -107,23 +125,38 @@ namespace KI_Spiele.Connect_Four
             // Update move number
             MoveNumber++;
 
+            // Update next player
             NextPlayer = (Player)((1 + (byte)NextPlayer) % 2);
 
+            // Check for GameResult and return it
             GameResult = CheckForWinner(row, action.Move);
 
             return GameResult;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.GetAction(byte, byte)"/>
+        /// </summary>
+        /// <param name="row"> Is not used here because an action is only characterized by column. </param>
+        /// <param name="column"></param>
+        /// <returns> Re-used action for given row and column stored inside AllActions. </returns>
         public IAction GetAction(byte row, byte column)
         {
             return AllActions[column];
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.GetGameState"/>
+        /// </summary>
         public GameResult GetGameState()
         {
             return GameResult;
         }
 
+        /// <summary>
+        /// Implements <see cref="IGameState.GetNextPlayer"/>
+        /// </summary>
+        /// <returns> Player that is to make the next move. </returns>
         public Player GetNextPlayer()
         {
             return NextPlayer;
@@ -131,6 +164,7 @@ namespace KI_Spiele.Connect_Four
 
         public void ResetBoard(Player startingPlayer)
         {
+            // Reset GameBoard and corresponding member variables
             GameBoard = new Player[][]
             {
                 new Player[]{ Player.Undefined, Player.Undefined, Player.Undefined, Player.Undefined, Player.Undefined, Player.Undefined, Player.Undefined },
@@ -144,6 +178,7 @@ namespace KI_Spiele.Connect_Four
             MoveNumber = 0;
 
             NextPlayer = startingPlayer;
+            // If startingPlayer is not to a specific player, choose one randomly.
             if (NextPlayer == Player.Undefined)
             {
                 NextPlayer = (Player)random.Next(0, 2);
@@ -152,6 +187,9 @@ namespace KI_Spiele.Connect_Four
         #endregion
 
         #region --- Private Init Functions ---
+        /// <summary>
+        /// Initializes all valid actions and stores them inside a 1D-Array.
+        /// </summary>
         private void InitActions()
         {
             AllActions = new IAction[]
@@ -165,6 +203,7 @@ namespace KI_Spiele.Connect_Four
         #region --- Private Helper Functions ---
         private GameResult CheckForWinner(int row, byte column)
         {
+            // Check for all possible ways a game can end.
             GameResult rowResult = CheckRow(row, column);
             if (rowResult != GameResult.NotFinished)
             {
@@ -183,6 +222,7 @@ namespace KI_Spiele.Connect_Four
                 return diagonalResult;
             }
 
+            // If no winner can be determined and all possible moves have been made, it's a draw.
             if (MoveNumber == 42)
             {
                 return GameResult.Draw;
@@ -200,6 +240,8 @@ namespace KI_Spiele.Connect_Four
                     GameBoard[row][i + 2] == GameBoard[row][i + 3] &&
                     GameBoard[row][i] != Player.Undefined)
                 {
+                    // Is castable since it can't be Player.Undefined and GameResult.PlayerZero/GameResult.PlayerOne have the same index as
+                    // Player.Zero/Player.One
                     return (GameResult)GameBoard[row][i];
                 }
             }
@@ -215,6 +257,8 @@ namespace KI_Spiele.Connect_Four
                     GameBoard[i + 2][column] == GameBoard[i + 3][column] &&
                     GameBoard[i][column] != Player.Undefined)
                 {
+                    // Is castable since it can't be Player.Undefined and GameResult.PlayerZero/GameResult.PlayerOne have the same index as
+                    // Player.Zero/Player.One
                     return (GameResult)GameBoard[i][column];
                 }
             }
@@ -259,6 +303,8 @@ namespace KI_Spiele.Connect_Four
         #endregion
 
         #region --- Private Members ---
+        // GameBoard is 6x7 2D-array with first index specifying the row and second index specifying the column
+        // Low index specifies top rows, high index lower rows
         private Player[][] GameBoard;
         private byte MoveNumber;
         private GameResult GameResult;

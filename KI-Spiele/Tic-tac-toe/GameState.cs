@@ -37,7 +37,7 @@ namespace KI_Spiele.Tic_tac_toe
         {
             get
             {
-                // Leading one
+                // Leading one, so that leading zeros are not truncated
                 BigInteger result = 1;
                 for (int i = 0; i < GameBoard.Length; i++)
                 {

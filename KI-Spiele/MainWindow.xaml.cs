@@ -1,5 +1,7 @@
-﻿using KI_Spiele.AI;
+﻿using AI.Util;
+using KI_Spiele.AI;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +23,7 @@ namespace KI_Spiele
             InitializeGUI();
             InitializeTimer();
             SetGame("Tic-tac-toe");
+            InitializeAI();
         }
 
         private void InitializeGUI()
@@ -36,6 +39,7 @@ namespace KI_Spiele
             ModeSelect.Items.Add("Player vs. Player");
             ModeSelect.Items.Add("Player vs. AI");
             ModeSelect.Items.Add("AI vs. AI");
+            ModeSelect.Items.Add("AI vs. Random");
 
             ModeSelect.SelectedIndex = 0;
             ModeSelect.SelectionChanged += ModeSelected;
@@ -54,15 +58,19 @@ namespace KI_Spiele
             switch ((string)GameSelect.SelectedItem)
             {
                 case "Tic-tac-toe":
+                    // Clear remainders of GameGUI
                     GameGrid.Children.Clear();
                     GameGrid.RowDefinitions.Clear();
                     GameGrid.ColumnDefinitions.Clear();
+
                     SelectedGame.InitializeBoard(this);
                     break;
                 case "Connect Four":
+                    // Clear remainders of GameGUI
                     GameGrid.Children.Clear();
                     GameGrid.RowDefinitions.Clear();
                     GameGrid.ColumnDefinitions.Clear();
+
                     SelectedGame.InitializeBoard(this);
                     break;
             }
@@ -90,14 +98,23 @@ namespace KI_Spiele
 
         private void InitializeTimer()
         {
-            if (null != Timer)
+            if (null != TrainTimer)
             {
-                Timer.Stop();
+                TrainTimer.Stop();
             }
             else
             {
-                Timer = new DispatcherTimer();
-                Timer.Tick += LearnStep;
+                TrainTimer = new DispatcherTimer();
+                TrainTimer.Tick += LearnStep;
+            }
+            if (null != SimulateTimer)
+            {
+                SimulateTimer.Stop();
+            }
+            else
+            {
+                SimulateTimer = new DispatcherTimer();                
+                SimulateTimer.Tick += SimulateStep;
             }
         }
 
@@ -109,7 +126,8 @@ namespace KI_Spiele
 
         private void SetGame(string game)
         {
-            Timer.Stop();
+            TrainTimer.Stop();
+            SimulateTimer.Stop();
             if (SelectedGame != null)
             {
                 SelectedGame.UnbindUICallback();
@@ -140,41 +158,131 @@ namespace KI_Spiele
                 case "Player vs. Player":
                     SelectedGame.BindUICallback();
                     TrainGUI.Visibility = Visibility.Hidden;
+                    SimulateGUI.Visibility = Visibility.Hidden;
                     KeyDown -= AIMakeMove;
                     break;
                 case "Player vs. AI":
                     SelectedGame.UnbindUICallback();
                     SelectedGame.BindUICallback();
                     TrainGUI.Visibility = Visibility.Hidden;
+                    SimulateGUI.Visibility = Visibility.Hidden;
+                    KeyDown += AIMakeMove;
                     break;
                 case "AI vs. AI":
                     SelectedGame.UnbindUICallback();
                     TrainGUI.Visibility = Visibility.Visible;
-                    KeyDown += AIMakeMove;
+                    SimulateGUI.Visibility = Visibility.Visible;
+                    KeyDown -= AIMakeMove;
+                    break;
+                case "AI vs. Random":
+                    SelectedGame.UnbindUICallback();
+                    TrainGUI.Visibility = Visibility.Hidden;
+                    SimulateGUI.Visibility = Visibility.Visible;
+                    KeyDown -= AIMakeMove;
+
+                    // Reseting the LearnedTable is the equivalent of playing randomly
+                    QLearningAIOne.ResetLearnedTable();
                     break;
             }
         }
 
         private void StartTraining(object sender, RoutedEventArgs e)
         {
+            SimulateTimer.Stop();
             InitializeAI();
             CurrentIteration = 0;
             double reward = double.Parse(Reward.Text);
             double penalty = double.Parse(Penalty.Text);
             NumberIterations = long.Parse(NumIterations.Text);
 
-            StartTimer(0.001);
+            StartTimer(TrainTimer, 0.00001);
         }
 
-        private void StartTimer(double seconds)
+        private void StartSimulation(object sender, RoutedEventArgs e)
         {
-            Timer.Stop();
-            Timer.Interval = TimeSpan.FromSeconds(seconds);
+            TrainTimer.Stop();
+            CurrentIteration = 0;
+            NumberIterations = long.Parse(NumGames.Text);
+            PlayerZeroWins.Content = 0;
+            PlayerOneWins.Content = 0;
+            Draws.Content = 0;
 
-            Timer.Start();
+            if (IsSimulated.IsChecked == true)
+            {
+                StartTimer(SimulateTimer, 1);
+            }
+            else
+            {
+                StartTimer(SimulateTimer, 0.00001);
+            }            
         }
 
-        // private void LearnStep(object sender, EventArgs e)
+        private void ResetGameBtn(object sender, RoutedEventArgs e)
+        {
+            SelectedGame.ResetGame(true);
+        }
+
+        private void StartTimer(DispatcherTimer t, double seconds)
+        {
+            t.Stop();
+            t.Interval = TimeSpan.FromSeconds(seconds);
+
+            t.Start();
+        }
+
+        private void SimulateStep(object sender, EventArgs e)
+        {
+            GameResult result;
+            if (CurrentIteration < NumberIterations)
+            {
+                if (SelectedGame.GetNextPlayer() == Player.Zero)
+                {
+                    if ((result = QLearningAIZero.MakeMove(false, IsSimulated.IsChecked == true)) != GameResult.NotFinished)
+                    {
+                        CurrentIteration++;
+                        switch (result)
+                        {
+                            case GameResult.PlayerZero:
+                                PlayerZeroWins.Content = long.Parse(PlayerZeroWins.Content.ToString()) + 1;
+                                break;
+                            case GameResult.PlayerOne:
+                                PlayerOneWins.Content = long.Parse(PlayerOneWins.Content.ToString()) + 1;
+                                break;
+                            case GameResult.Draw:
+                                Draws.Content = long.Parse(Draws.Content.ToString()) + 1;
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    if ((result = QLearningAIOne.MakeMove(false, IsSimulated.IsChecked == true)) != GameResult.NotFinished)
+                    {
+                        CurrentIteration++;
+                        switch (result)
+                        {
+                            case GameResult.PlayerZero:
+                                PlayerZeroWins.Content = long.Parse(PlayerZeroWins.Content.ToString()) + 1;
+                                break;
+                            case GameResult.PlayerOne:
+                                PlayerOneWins.Content = long.Parse(PlayerOneWins.Content.ToString()) + 1;
+                                break;
+                            case GameResult.Draw:
+                                Draws.Content = long.Parse(Draws.Content.ToString()) + 1;
+                                break;
+                        }
+                    }
+                }
+                ProgressSimulate.Value = (int)(CurrentIteration * 100 / (NumberIterations));
+            }
+            else
+            {
+                SimulateTimer.Stop();
+                SelectedGame.ResetGame(true);
+            }
+        }
+
+
         private void LearnStep(object sender, EventArgs e)
         {
             long LearnPhase = NumberIterations / 4;
@@ -186,12 +294,10 @@ namespace KI_Spiele
                     if (SelectedGame.GetNextPlayer() == Player.Zero)
                     {
                         if(QLearningAIZero.MakeMove() != GameResult.NotFinished) i++;
-                        ZeroMadeMoves++;
                     }
                     else
                     {
                         if (QLearningAIOne.MakeMove() != GameResult.NotFinished) i++;
-                        OneMadeMoves++;
                     }
                 }
                 CurrentIteration += LearnSteps;
@@ -228,8 +334,8 @@ namespace KI_Spiele
             }
             else
             {
-                Timer.Stop();
-                SelectedGame.ResetGame();
+                TrainTimer.Stop();
+                SelectedGame.ResetGame(true);
             }
         }
 
@@ -239,14 +345,9 @@ namespace KI_Spiele
             {
                 case Key.M:
                     Player curPlayer = SelectedGame.GetNextPlayer();
-                    if (curPlayer == Player.Zero)
-                    {
-                        QLearningAIZero.MakeMove(false);
-                        break;
-                    }
                     if (curPlayer == Player.One)
                     {
-                        QLearningAIOne.MakeMove(false);
+                        QLearningAIOne.MakeMove(false, true);
                         break;
                     }
                     break;
@@ -265,9 +366,8 @@ namespace KI_Spiele
 
         private long CurrentIteration = 0;
         private long NumberIterations;
-        private long ZeroMadeMoves = 0;
-        private long OneMadeMoves = 0;
-        private DispatcherTimer Timer;
+        private DispatcherTimer TrainTimer;
+        private DispatcherTimer SimulateTimer;
         #endregion
     }
 }

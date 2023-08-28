@@ -12,6 +12,7 @@ namespace KI_Spiele.AI
 {
     class QLearning
     {
+        // Credit: KI-Spiele QLearning2 Handout - Prof. Dr.-Ing. Christof Rezk-Salama
         #region --- Constructor ---
         public QLearning(Player player)
         {
@@ -22,6 +23,7 @@ namespace KI_Spiele.AI
             Reward = 1.0;
             Penalty = -1.0;
             Player = player;
+            // MoveHistory to improve learning rate and convergance
             MoveHistory = new List<(BigInteger, IAction, List<IAction>)>();
             DefensiveLearning = true;
         }
@@ -40,34 +42,60 @@ namespace KI_Spiele.AI
         #endregion
 
         #region --- Public Member Functions ---
+        /// <summary>
+        /// Calculates the number of entries inside the LearnedTable for all states : + moves in given state
+        /// </summary>
+        /// <returns></returns>
         public long GetTableSize()
         {
             return LearnedTable.GetTableSize();
         }
 
-        public GameResult MakeMove(bool updateQTable = true)
+        public void ResetLearnedTable()
         {
+            LearnedTable = new QTable();
+        }
+
+        public GameResult MakeMove(bool updateQTable = true, bool updateGUI = false)
+        {
+            // Get Id of current GameState
             BigInteger currentState = Game.GetGameStateId();
             IAction a;
 
+            // Only update if flag is set to true (during training), when evaluating the bots
+            // performance you typically don't wanna update the LearnedTable unless you want
+            // Online-Learning
             if (updateQTable)
             {
+                // Select an action based on the current state, chooses randomly (ExplorationRate) the best move or a random move
                 a = SelectAction(Game, currentState);
                 MoveHistory.Add((currentState, a, Game.GetMoves()));
-                GameResult result = Game.MakeMove(a, false);                
+                GameResult result = Game.MakeMove(a, updateGUI);                
 
+                // If move finished the game propagate the reward/penalty throughout the MoveHistory with the QLearning rule
                 if (result != GameResult.NotFinished)
                 {
-                    var (r1, r2) = (1.0, 1.0);
-                    if (result == GameResult.PlayerOne || result == GameResult.PlayerZero) { (r1, r2) = (1.0, -1.0); };
+                    // Both bots are rewarded in case of a draw. This applies only to Tic-tac-toe theoretically, since perfect play from
+                    // both parties always leads to a draw. In Connect Four the starting player can always force a win, though it is not achievable
+                    // with this setup, so Draw and Win get the same reward.
+                    var (r1, r2) = (Reward, OtherAI.Reward);
+
+                    // Give out reward if one of the parties won
+                    if (result == GameResult.PlayerOne || result == GameResult.PlayerZero) { (r1, r2) = (Reward, OtherAI.Penalty); };
+
+                    // Update the LearnedTable for both bots. This is needed so that the other bot learns to not lose. If only the one who made the last move is
+                    // updated, they performed way worse and made questionable moves. Updating both fixed this issue.
                     UpdateTable(r1);
                     OtherAI.UpdateTable(r2);
                 }
                 return result;
             }
 
+            // Perform the best move possible for the given state. If the state is not contained inside the LearnedTable,
+            // a random action from the list of possible moves is taken.
+            // TODO: This leaves room for improvement, instead choosing a move randomly one can either think of a strategy for the specific game or train a third LearnedTable where all games start with this given state, learning which move is best in the current scenario
             a = LearnedTable.BestActionNoLearning(currentState, Game);
-            return Game.MakeMove(a, true);
+            return Game.MakeMove(a, updateGUI);
         }
 
 
@@ -97,6 +125,7 @@ namespace KI_Spiele.AI
 
         private void UpdateTable(double reward)
         {
+            // Reverse the move history in order to propagate the reward/QLearning formula from end to start
             MoveHistory.Reverse();
 
             // Set last move to winning/losing move
