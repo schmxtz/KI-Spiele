@@ -142,7 +142,11 @@ namespace KI_Spiele.Tic_tac_toe
 
             try
             {
-                Game.MakeMove(Game.GetAction(row, col), true);
+                var result = Game.MakeMove(Game.GetAction(row, col), true);
+                if (result != GameResult.NotFinished)
+                {
+                    MessageBox.Show(result.ToString() + " won!");
+                }
             }
             catch (ArgumentException error)
             {

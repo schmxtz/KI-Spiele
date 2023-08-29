@@ -158,7 +158,11 @@ namespace KI_Spiele.Connect_Four
 
             try
             {
-                Game.MakeMove(Game.GetAction(0, col), true);
+                var result = Game.MakeMove(Game.GetAction(0, col), true);
+                if (result != GameResult.NotFinished)
+                {
+                    MessageBox.Show(result.ToString() + " won!");
+                }
             }
             catch (ArgumentException error)
             {

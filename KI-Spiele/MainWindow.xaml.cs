@@ -176,7 +176,7 @@ namespace KI_Spiele
                     break;
                 case "AI vs. Random":
                     SelectedGame.UnbindUICallback();
-                    TrainGUI.Visibility = Visibility.Hidden;
+                    TrainGUI.Visibility = Visibility.Visible;
                     SimulateGUI.Visibility = Visibility.Visible;
                     KeyDown -= AIMakeMove;
 
@@ -194,6 +194,11 @@ namespace KI_Spiele
             double reward = double.Parse(Reward.Text);
             double penalty = double.Parse(Penalty.Text);
             NumberIterations = long.Parse(NumIterations.Text);
+
+            if ((string)ModeSelect.SelectedValue == "AI vs. Random")
+            {
+                QLearningAIOne.ExplorationRate = 1.0;
+            }
 
             StartTimer(TrainTimer, 0.00001);
         }
@@ -297,7 +302,7 @@ namespace KI_Spiele
                     }
                     else
                     {
-                        if (QLearningAIOne.MakeMove() != GameResult.NotFinished) i++;
+                        if (QLearningAIOne.MakeMove(Learn) != GameResult.NotFinished) i++;
                     }
                 }
                 CurrentIteration += LearnSteps;
@@ -315,22 +320,31 @@ namespace KI_Spiele
             {
                 QLearningAIZero.LearningRate = 0.4;
                 QLearningAIZero.ExplorationRate = 0.7;
-                QLearningAIOne.LearningRate = 0.4;
-                QLearningAIOne.ExplorationRate = 0.7;
+                if (Learn)
+                {
+                    QLearningAIOne.LearningRate = 0.4;
+                    QLearningAIOne.ExplorationRate = 0.7;
+                }
             }
             else if (CurrentIteration < 3 * LearnPhase)
             {
                 QLearningAIZero.LearningRate = 0.3;
                 QLearningAIZero.ExplorationRate = 0.5;
-                QLearningAIOne.LearningRate = 0.3;
-                QLearningAIOne.ExplorationRate = 0.5;
+                if (Learn)
+                {
+                    QLearningAIOne.LearningRate = 0.3;
+                    QLearningAIOne.ExplorationRate = 0.5;
+                }
             }
             else if (CurrentIteration < 4 * LearnPhase)
             {
                 QLearningAIZero.LearningRate = 0.2;
                 QLearningAIZero.ExplorationRate = 0.3;
-                QLearningAIOne.LearningRate = 0.2;
-                QLearningAIOne.ExplorationRate = 0.3;
+                if (Learn)
+                {
+                    QLearningAIOne.LearningRate = 0.2;
+                    QLearningAIOne.ExplorationRate = 0.3;
+                }
             }
             else
             {
@@ -368,6 +382,7 @@ namespace KI_Spiele
         private long NumberIterations;
         private DispatcherTimer TrainTimer;
         private DispatcherTimer SimulateTimer;
+        private bool Learn = true;
         #endregion
     }
 }

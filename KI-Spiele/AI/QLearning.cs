@@ -25,7 +25,7 @@ namespace KI_Spiele.AI
             Player = player;
             // MoveHistory to improve learning rate and convergance
             MoveHistory = new List<(BigInteger, IAction, List<IAction>)>();
-            DefensiveLearning = true;
+            DefensiveLearning = false;
         }
         #endregion 
 
@@ -75,10 +75,8 @@ namespace KI_Spiele.AI
                 // If move finished the game propagate the reward/penalty throughout the MoveHistory with the QLearning rule
                 if (result != GameResult.NotFinished)
                 {
-                    // Both bots are rewarded in case of a draw. This applies only to Tic-tac-toe theoretically, since perfect play from
-                    // both parties always leads to a draw. In Connect Four the starting player can always force a win, though it is not achievable
-                    // with this setup, so Draw and Win get the same reward.
-                    var (r1, r2) = (Reward, OtherAI.Reward);
+                    //var (r1, r2) = (Reward, OtherAI.Reward);
+                    var (r1, r2) = (0.5, 0.5);
 
                     // Give out reward if one of the parties won
                     if (result == GameResult.PlayerOne || result == GameResult.PlayerZero) { (r1, r2) = (Reward, OtherAI.Penalty); };
