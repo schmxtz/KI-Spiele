@@ -16,7 +16,6 @@ namespace KI_Spiele.Connect_Four
 
         #region --- Public Properties ---
         public Player StartingPlayer { get; set; }
-        public IGameState GameState { get; set; }
         #endregion
 
         #region --- IGame Interface Implementation ---
@@ -127,7 +126,7 @@ namespace KI_Spiele.Connect_Four
         #endregion
 
         #region --- Private Members ---
-        // private IGameState GameState;
+        private IGameState GameState;
         private IGameGUI GameGUI;
         #endregion
     }

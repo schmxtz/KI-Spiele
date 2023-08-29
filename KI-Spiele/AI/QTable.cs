@@ -42,11 +42,6 @@ namespace KI_Spiele.AI
 
         public double ValueFor(BigInteger stateId, List<IAction> availableActions)
         {
-            if (ValueTable[stateId].Count > availableActions.Count)
-            {
-                Console.WriteLine(ValueTable[stateId].Count + " " + availableActions.Count);
-            }
-
             // Lazy Initialization
             if (!ValueTable.ContainsKey(stateId))
             {

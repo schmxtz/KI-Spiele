@@ -39,8 +39,6 @@ namespace KI_Spiele.AI
         public QLearning OtherAI { get; set; }
         public Player Player { get; set; }
         public bool DefensiveLearning { get; set; }
-
-        private Dictionary<BigInteger, Player[][]> d = new Dictionary<BigInteger, Player[][]>();
         #endregion
 
         #region --- Public Member Functions ---
@@ -69,29 +67,6 @@ namespace KI_Spiele.AI
             // Online-Learning
             if (updateQTable)
             {
-                KI_Spiele.Connect_Four.GameState g = (KI_Spiele.Connect_Four.GameState)((KI_Spiele.Connect_Four.Game)Game).GameState;
-                if (d.ContainsKey(currentState))
-                {
-                    for (int i = 0; i < 6; i++)
-                    {
-                        foreach(var c in d[currentState][0])
-                        {
-                            Console.WriteLine(c);
-                        }
-                    }
-                    for (int i = 0; i < 6; i++)
-                    {
-                        foreach (var c in g.GameBoard[i])
-                        {
-                            Console.WriteLine(c);
-                        }
-                    }
-                    Console.WriteLine("----------------------");
-                }
-                else
-                {
-                    d.Add(currentState, (Player[][])g.GameBoard.Select(b => b.ToArray()).ToArray());
-                }
                 // Select an action based on the current state, chooses randomly (ExplorationRate) the best move or a random move
                 a = SelectAction(Game, currentState);
                 MoveHistory.Add((currentState, a, Game.GetMoves()));
@@ -172,12 +147,19 @@ namespace KI_Spiele.AI
             {
                 double oldQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item2);
                 double newQuality = QLearningFormula(oldQuality, followStateQuality, reward);
-                followStateQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item3);
+
+                // followStateQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item3);
 
                 if (newQuality != oldQuality)
                 {
                     LearnedTable.SetValue(MoveHistory[i].Item1, MoveHistory[i].Item2, newQuality);
-                }                
+                }
+
+                // We were not quite sure whether to have the followStateQuality be influenced by the following move in its current
+                // iteration. Having it this way, after setting the QValue for the state in Item1, it is not implemented like in the Handout for 
+                // QLearning2. It being this way we think that it theoretically speeds up the learning process, because you don't have reach this 
+                // particular end-state again for it to propagate to the first move.
+                followStateQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item3);
             }
 
             MoveHistory.Clear();

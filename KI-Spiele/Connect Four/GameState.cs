@@ -38,7 +38,7 @@ namespace KI_Spiele.Connect_Four
                 BigInteger result = 1;
                 for (int i = 0; i < GameBoard.Length; i++)
                 {
-                    for (int j = 0; j < GameBoard.Length; j++)
+                    for (int j = 0; j < GameBoard[i].Length; j++)
                     {
                         // Allocate next two bits and add the bit-value of the tile
                         switch (GameBoard[i][j])
@@ -305,7 +305,7 @@ namespace KI_Spiele.Connect_Four
         #region --- Private Members ---
         // GameBoard is 6x7 2D-array with first index specifying the row and second index specifying the column
         // Low index specifies top rows, high index lower rows
-        public Player[][] GameBoard;
+        private Player[][] GameBoard;
         private byte MoveNumber;
         private GameResult GameResult;
         // Player who made the last move
