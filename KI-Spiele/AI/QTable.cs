@@ -42,8 +42,12 @@ namespace KI_Spiele.AI
 
         public double ValueFor(BigInteger stateId, List<IAction> availableActions)
         {
-            // Lazy Initialization
+            if (ValueTable[stateId].Count > availableActions.Count)
+            {
+                Console.WriteLine(ValueTable[stateId].Count + " " + availableActions.Count);
+            }
 
+            // Lazy Initialization
             if (!ValueTable.ContainsKey(stateId))
             {
                 // We have not visited this state before
@@ -56,6 +60,7 @@ namespace KI_Spiele.AI
                 return 0.0;
             }
 
+
             // the quality of a state is defined as the quality of 
             // the best action available in this state
             double MaxValue = Double.MinValue;
@@ -63,7 +68,7 @@ namespace KI_Spiele.AI
             {
                 if (!ValueTable[stateId].ContainsKey(a))
                 {
-                    ValueTable[stateId][a] = 0.0f;
+                    ValueTable[stateId][a] = 0.0;
                 }
 
                 double value = ValueTable[stateId][a];
@@ -78,7 +83,6 @@ namespace KI_Spiele.AI
 
         public IAction BestAction(BigInteger stateId, List<IAction> availableActions)
         {
-
             // Lazy initialization
             if (!ValueTable.ContainsKey(stateId))
             {
@@ -104,7 +108,7 @@ namespace KI_Spiele.AI
             {
                 if (!ValueTable[stateId].ContainsKey(a))
                 {
-                    ValueTable[stateId][a] = 0.0f;
+                    ValueTable[stateId][a] = 0.0;
                 }
 
                 double value = ValueTable[stateId][a];
@@ -139,6 +143,7 @@ namespace KI_Spiele.AI
 
                 double maxValue = double.MinValue;
                 var actions = ValueTable[stateId];
+
                 foreach (var a in actions)
                 {
                     if (maxValue < a.Value)
@@ -173,7 +178,6 @@ namespace KI_Spiele.AI
 
             // store the value in the table
             ValueTable[stateId][a] = newValue;
-
         }
         #endregion
 
