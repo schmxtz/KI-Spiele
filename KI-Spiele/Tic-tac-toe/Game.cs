@@ -1,8 +1,5 @@
-﻿using KI_Spiele.AI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace KI_Spiele.Tic_tac_toe
 {
@@ -135,8 +132,8 @@ namespace KI_Spiele.Tic_tac_toe
         #endregion
 
         #region --- Private Members ---
-        IGameState GameState;
-        IGameGUI GameGUI;
+        private IGameState GameState;
+        private IGameGUI GameGUI;
         #endregion
     }
 }

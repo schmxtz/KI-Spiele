@@ -305,7 +305,7 @@ namespace KI_Spiele.Connect_Four
         #region --- Private Members ---
         // GameBoard is 6x7 2D-array with first index specifying the row and second index specifying the column
         // Low index specifies top rows, high index lower rows
-        private Player[][] GameBoard;
+        public Player[][] GameBoard;
         private byte MoveNumber;
         private GameResult GameResult;
         // Player who made the last move

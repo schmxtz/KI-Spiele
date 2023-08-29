@@ -193,11 +193,20 @@ namespace KI_Spiele
             CurrentIteration = 0;
             double reward = double.Parse(Reward.Text);
             double penalty = double.Parse(Penalty.Text);
+            QLearningAIZero.Reward = reward;
+            QLearningAIZero.Penalty = penalty;
+            QLearningAIOne.Reward = reward;
+            QLearningAIOne.Penalty = penalty;
             NumberIterations = long.Parse(NumIterations.Text);
 
-            if ((string)ModeSelect.SelectedValue == "AI vs. Random")
+            if ((string)ModeSelect.SelectedItem == "AI vs. Random")
             {
+                Learn = false;
                 QLearningAIOne.ExplorationRate = 1.0;
+            }
+            else
+            {
+                Learn = true;
             }
 
             StartTimer(TrainTimer, 0.00001);
@@ -302,7 +311,7 @@ namespace KI_Spiele
                     }
                     else
                     {
-                        if (QLearningAIOne.MakeMove(Learn) != GameResult.NotFinished) i++;
+                        if (QLearningAIOne.MakeMove() != GameResult.NotFinished) i++;
                     }
                 }
                 CurrentIteration += LearnSteps;

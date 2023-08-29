@@ -1,11 +1,5 @@
-﻿using KI_Spiele.AI;
-using KI_Spiele.Tic_tac_toe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KI_Spiele.Connect_Four
 {
@@ -22,6 +16,7 @@ namespace KI_Spiele.Connect_Four
 
         #region --- Public Properties ---
         public Player StartingPlayer { get; set; }
+        public IGameState GameState { get; set; }
         #endregion
 
         #region --- IGame Interface Implementation ---
@@ -132,8 +127,8 @@ namespace KI_Spiele.Connect_Four
         #endregion
 
         #region --- Private Members ---
-        IGameState GameState;
-        IGameGUI GameGUI;
+        // private IGameState GameState;
+        private IGameGUI GameGUI;
         #endregion
     }
 }
