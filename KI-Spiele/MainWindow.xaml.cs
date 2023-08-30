@@ -180,9 +180,6 @@ namespace KI_Spiele
                     TrainGUI.Visibility = Visibility.Visible;
                     SimulateGUI.Visibility = Visibility.Visible;
                     KeyDown -= AIMakeMove;
-
-                    // Reseting the LearnedTable is the equivalent of playing randomly
-                    QLearningAIZero.ResetLearnedTable();
                     break;
             }
         }
@@ -221,6 +218,12 @@ namespace KI_Spiele
             PlayerZeroWins.Content = 0;
             PlayerOneWins.Content = 0;
             Draws.Content = 0;
+
+            if((string)ModeSelect.SelectedItem == "AI vs. Random")
+            {
+                // Reseting the LearnedTable is the equivalent of playing randomly
+                QLearningAIZero.ResetLearnedTable();
+            }
 
             if (IsSimulated.IsChecked == true)
             {
