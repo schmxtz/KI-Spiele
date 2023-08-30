@@ -73,6 +73,8 @@
             <TextBlock Margin="10,0,0,0">AI_2 ρ:</TextBlock>
             <TextBox x:Name="AIOneRho" Width="40">0.8</TextBox>
             <TextBlock Margin="10,0,0,0">(Learning rate α, Discount rate γ, Exploration rate ρ)</TextBlock>
+            <TextBlock Margin="10,0,0,0">Use Learnphases?</TextBlock>
+            <CheckBox x:Name="UseLearnphase" IsChecked="True"></CheckBox>
         </StatusBar>
         <StatusBar x:Name="GameOutcomes" Grid.Row="3">
             <TextBlock Margin="10,0,0,0" FontWeight="Bold">Game outcomes:</TextBlock>

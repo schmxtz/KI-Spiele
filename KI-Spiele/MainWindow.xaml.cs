@@ -2,6 +2,7 @@
 using KI_Spiele.AI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -181,7 +182,7 @@ namespace KI_Spiele
                     KeyDown -= AIMakeMove;
 
                     // Reseting the LearnedTable is the equivalent of playing randomly
-                    QLearningAIOne.ResetLearnedTable();
+                    QLearningAIZero.ResetLearnedTable();
                     break;
             }
         }
@@ -202,7 +203,7 @@ namespace KI_Spiele
             if ((string)ModeSelect.SelectedItem == "AI vs. Random")
             {
                 Learn = false;
-                QLearningAIOne.ExplorationRate = 1.0;
+                QLearningAIZero.ExplorationRate = 1.0;
             }
             else
             {
@@ -315,50 +316,51 @@ namespace KI_Spiele
                     }
                 }
                 CurrentIteration += LearnSteps;
+                Progress.Value = (int)(CurrentIteration * 100 / (NumberIterations));
             }
-            Progress.Value = (int)(CurrentIteration * 100 / (NumberIterations));
+            else
+            {
+                TrainTimer.Stop();
+                SelectedGame.ResetGame(true);
+            }
+            
 
-            if (CurrentIteration < LearnPhase)
+            if (CurrentIteration < LearnPhase && UseLearnphase.IsChecked == true)
             {
                 QLearningAIZero.LearningRate = 0.5;
                 QLearningAIZero.ExplorationRate = 1.0;
                 QLearningAIOne.LearningRate = 0.5;
                 QLearningAIOne.ExplorationRate = 1.0;
             }
-            else if (CurrentIteration < 2 * LearnPhase)
+            else if (CurrentIteration < 2 * LearnPhase && UseLearnphase.IsChecked == true)
             {
-                QLearningAIZero.LearningRate = 0.4;
-                QLearningAIZero.ExplorationRate = 0.7;
+                QLearningAIOne.LearningRate = 0.4;
+                QLearningAIOne.ExplorationRate = 0.7;
                 if (Learn)
                 {
-                    QLearningAIOne.LearningRate = 0.4;
-                    QLearningAIOne.ExplorationRate = 0.7;
+                    QLearningAIZero.LearningRate = 0.4;
+                    QLearningAIZero.ExplorationRate = 0.7;
                 }
             }
-            else if (CurrentIteration < 3 * LearnPhase)
+            else if (CurrentIteration < 3 * LearnPhase && UseLearnphase.IsChecked == true)
             {
-                QLearningAIZero.LearningRate = 0.3;
-                QLearningAIZero.ExplorationRate = 0.5;
+                QLearningAIOne.LearningRate = 0.3;
+                QLearningAIOne.ExplorationRate = 0.5;
                 if (Learn)
                 {
-                    QLearningAIOne.LearningRate = 0.3;
-                    QLearningAIOne.ExplorationRate = 0.5;
+                    QLearningAIZero.LearningRate = 0.3;
+                    QLearningAIZero.ExplorationRate = 0.5;
                 }
             }
-            else if (CurrentIteration < 4 * LearnPhase)
+            else if (CurrentIteration < 4 * LearnPhase && UseLearnphase.IsChecked == true)
             {
-                QLearningAIZero.LearningRate = 0.2;
-                QLearningAIZero.ExplorationRate = 0.3;
+                QLearningAIOne.LearningRate = 0.2;
+                QLearningAIOne.ExplorationRate = 0.3;
                 if (Learn)
                 {
-                    QLearningAIOne.LearningRate = 0.2;
-                    QLearningAIOne.ExplorationRate = 0.3;
+                    QLearningAIZero.LearningRate = 0.2;
+                    QLearningAIZero.ExplorationRate = 0.3;
                 }
-            }
-            else
-            {
-                TrainTimer.Stop();
-                SelectedGame.ResetGame(true);
             }
         }
 
@@ -370,7 +372,11 @@ namespace KI_Spiele
                     Player curPlayer = SelectedGame.GetNextPlayer();
                     if (curPlayer == Player.One)
                     {
-                        QLearningAIOne.MakeMove(false, true);
+                        var result = QLearningAIOne.MakeMove(false, true);
+                        if (result != GameResult.NotFinished)
+                        {
+                            MessageBox.Show(result.ToString() + " won!"); 
+                        }
                         break;
                     }
                     break;
