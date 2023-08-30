@@ -147,8 +147,7 @@ namespace KI_Spiele.AI
             {
                 double oldQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item2);
                 double newQuality = QLearningFormula(oldQuality, followStateQuality, reward);
-
-                // followStateQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item3);
+                followStateQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item3);
 
                 if (newQuality != oldQuality)
                 {
@@ -159,7 +158,7 @@ namespace KI_Spiele.AI
                 // iteration. Having it this way, after setting the QValue for the state in Item1, it is not implemented like in the Handout for 
                 // QLearning2. It being this way we think that it theoretically speeds up the learning process, because you don't have reach this 
                 // particular end-state again for it to propagate to the first move.
-                followStateQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item3);
+                // followStateQuality = LearnedTable.ValueFor(MoveHistory[i].Item1, MoveHistory[i].Item3);
             }
 
             MoveHistory.Clear();
