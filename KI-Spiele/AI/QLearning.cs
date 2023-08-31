@@ -116,7 +116,7 @@ namespace KI_Spiele.AI
         private double QLearningFormula(double oldQuality, double followStateQuality, double reward) 
         {
             double newQuality = (1.0 - LearningRate) * oldQuality +
-                (LearningRate) * (reward + DiscountRate * followStateQuality);
+                (LearningRate) * (DiscountRate * followStateQuality);
 
             return newQuality;
         }
